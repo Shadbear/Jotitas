@@ -117,6 +117,15 @@ function Navbar({ carrito }) {
             <span className="text-xl">
               🛒
             </span>
+            <button
+  onClick={() => {
+    localStorage.removeItem("logueado");
+    window.location.reload();
+  }}
+  className="bg-zinc-800 hover:bg-zinc-700 px-5 py-3 rounded-2xl font-bold transition"
+>
+  Salir
+</button>
 
             <span>
               {carrito.length}

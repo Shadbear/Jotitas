@@ -9,6 +9,10 @@ function ProductCard({ producto, agregarAlCarrito }) {
           src={producto.imagen}
           alt={producto.nombre}
           className="h-96 w-full object-cover group-hover:scale-110 transition duration-500"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400';
+          }}
         />
 
         <div className="absolute top-4 left-4 bg-pink-500 px-3 py-1 rounded-full text-sm font-bold">

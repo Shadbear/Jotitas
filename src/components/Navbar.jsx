@@ -1,19 +1,16 @@
 import { useState } from "react";
 
-function Navbar({ carrito }) {
+function Navbar({ carrito, onLogout }) {
 
   const [menuAbierto, setMenuAbierto] = useState(false);
 
   const scrollToSection = (id) => {
-
     const section = document.getElementById(id);
-
     if (section) {
       section.scrollIntoView({
         behavior: "smooth",
       });
     }
-
     setMenuAbierto(false);
   };
 
@@ -23,12 +20,13 @@ function Navbar({ carrito }) {
       top-0
       z-50
       backdrop-blur-lg
-      bg-black/70
+      bg-black/80
       border-b
-      border-gray-800
+      border-purple-500/30
       px-6
       md:px-10
       py-5
+      neon-border
     ">
 
       <div className="
@@ -45,31 +43,33 @@ function Navbar({ carrito }) {
             flex
             items-center
             gap-3
+            group
           "
         >
 
-          <div className="
-            w-10
-            h-10
-            bg-pink-500
-            rounded-2xl
-            flex
-            items-center
-            justify-center
-            font-black
-            text-black
-          ">
-            J
-          </div>
+<div className="w-12 h-12 bg-neon-pink shadow-neon ..."> 
+  J
+</div>
 
-          <h1 className="
-            text-3xl
-            font-black
-            tracking-tight
-            text-pink-500
-          ">
-            JOTITAS
-          </h1>
+          <div>
+            <h1 className="
+              text-3xl
+              font-black
+              tracking-widest
+              bg-gradient-to-r
+              from-purple-400
+              via-purple-500
+              to-cyan-400
+              bg-clip-text
+              text-transparent
+              neon-text
+            ">
+              JOTITAS
+            </h1>
+            <p className="text-cyan-400 text-xs font-bold tracking-widest">
+              CYBERWEAR
+            </p>
+          </div>
 
         </div>
 
@@ -83,55 +83,89 @@ function Navbar({ carrito }) {
 
           <button
             onClick={() => scrollToSection("inicio")}
-            className="hover:text-pink-400 transition"
+            className="
+              text-purple-300
+              hover:text-cyan-400
+              transition
+              font-bold
+              tracking-wide
+              hover:neon-cyan
+            "
           >
-            Inicio
+            INICIO
           </button>
 
           <button
             onClick={() => scrollToSection("tienda")}
-            className="hover:text-pink-400 transition"
+            className="
+              text-purple-300
+              hover:text-cyan-400
+              transition
+              font-bold
+              tracking-wide
+            "
           >
-            Tienda
+            TIENDA
           </button>
 
           <button
             onClick={() => scrollToSection("contacto")}
-            className="hover:text-pink-400 transition"
+            className="
+              text-purple-300
+              hover:text-cyan-400
+              transition
+              font-bold
+              tracking-wide
+            "
           >
-            Pago
+            PAGO
           </button>
 
           {/* CARRITO */}
           <div className="
-            bg-pink-500
-            px-5
+            bg-gradient-to-r
+            from-purple-600
+            to-cyan-500
+            px-6
             py-3
-            rounded-2xl
+            rounded-xl
             font-bold
             flex
             items-center
             gap-2
+            neon-border
+            animate-pulse-neon
           ">
 
-            <span className="text-xl">
+            <span className="text-2xl">
               🛒
             </span>
-            <button
-  onClick={() => {
-    localStorage.removeItem("logueado");
-    window.location.reload();
-  }}
-  className="bg-zinc-800 hover:bg-zinc-700 px-5 py-3 rounded-2xl font-bold transition"
->
-  Salir
-</button>
 
-            <span>
+            <span className="text-white">
               {carrito.length}
             </span>
 
           </div>
+
+          {/* SALIR */}
+          <button
+            onClick={onLogout}
+            className="
+              border
+              border-cyan-400
+              text-cyan-400
+              hover:bg-cyan-400
+              hover:text-black
+              px-6
+              py-3
+              rounded-xl
+              font-bold
+              transition
+              neon-border-cyan
+            "
+          >
+            SALIR
+          </button>
 
         </div>
 
@@ -141,6 +175,7 @@ function Navbar({ carrito }) {
           className="
             md:hidden
             text-3xl
+            text-purple-400
           "
         >
           ☰
@@ -157,42 +192,65 @@ function Navbar({ carrito }) {
           flex
           flex-col
           gap-4
-          bg-zinc-900
+          bg-purple-900/20
+          border
+          border-purple-500/30
           p-6
           rounded-2xl
+          neon-border
         ">
 
           <button
             onClick={() => scrollToSection("inicio")}
-            className="text-left"
+            className="text-left text-purple-300 font-bold hover:text-cyan-400"
           >
-            Inicio
+            INICIO
           </button>
 
           <button
             onClick={() => scrollToSection("tienda")}
-            className="text-left"
+            className="text-left text-purple-300 font-bold hover:text-cyan-400"
           >
-            Tienda
+            TIENDA
           </button>
 
           <button
             onClick={() => scrollToSection("contacto")}
-            className="text-left"
+            className="text-left text-purple-300 font-bold hover:text-cyan-400"
           >
-            Pago
+            PAGO
           </button>
 
           <div className="
-            bg-pink-500
+            bg-gradient-to-r
+            from-purple-600
+            to-cyan-500
             px-4
             py-3
             rounded-xl
             font-bold
             text-center
+            text-white
+            neon-border
           ">
             🛒 {carrito.length}
           </div>
+
+          <button
+            onClick={onLogout}
+            className="
+              border
+              border-cyan-400
+              text-cyan-400
+              px-4
+              py-3
+              rounded-xl
+              font-bold
+              neon-border-cyan
+            "
+          >
+            SALIR
+          </button>
 
         </div>
 

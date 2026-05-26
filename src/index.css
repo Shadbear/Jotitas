@@ -1,13 +1,105 @@
+/* 1. EL IMPORT DEBE IR AQUÍ, ARRIBA DE TODO */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap');
+
+/* 2. LUEGO VAN LAS DIRECTIVAS DE TAILWIND */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-html{
-scroll-behavior:smooth;
+/* 3. FINALMENTE TU CÓDIGO PERSONALIZADO */
+html {
+  scroll-behavior: smooth;
 }
 
-body{
-margin:0;
-padding:0;
-background:black;
+body {
+  margin: 0;
+  padding: 0;
+  background: #050510;
+  font-family: 'Rajdhani', sans-serif;
 }
+
+/* ... el resto de tus clases .neon-text, .neon-border, etc. ... */
+
+/* Efecto neon glow */
+.neon-text {
+  text-shadow: 
+    0 0 10px #a855f7,
+    0 0 20px #a855f7,
+    0 0 40px #a855f7;
+}
+
+.neon-cyan {
+  text-shadow:
+    0 0 10px #06b6d4,
+    0 0 20px #06b6d4,
+    0 0 40px #06b6d4;
+}
+
+.neon-border {
+  box-shadow:
+    0 0 10px #a855f7,
+    0 0 20px #a855f7,
+    inset 0 0 10px rgba(168, 85, 247, 0.1);
+}
+
+.neon-border-cyan {
+  box-shadow:
+    0 0 10px #06b6d4,
+    0 0 20px #06b6d4,
+    inset 0 0 10px rgba(6, 182, 212, 0.1);
+}
+
+/* Scanlines effect */
+.scanlines::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.05) 2px,
+    rgba(0, 0, 0, 0.05) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Grid background */
+.cyber-grid {
+  background-image: 
+    linear-gradient(rgba(168, 85, 247, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168, 85, 247, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* Animaciones */
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.8; }
+  94% { opacity: 1; }
+  96% { opacity: 0.9; }
+  97% { opacity: 1; }
+}
+
+@keyframes pulse-neon {
+  0%, 100% { box-shadow: 0 0 10px #a855f7, 0 0 20px #a855f7; }
+  50% { box-shadow: 0 0 20px #a855f7, 0 0 40px #a855f7, 0 0 60px #a855f7; }
+}
+
+@keyframes glitch {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+.animate-flicker { animation: flicker 4s infinite; }
+.animate-pulse-neon { animation: pulse-neon 2s infinite; }
+.animate-glitch:hover { animation: glitch 0.3s infinite; }

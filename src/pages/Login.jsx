@@ -16,10 +16,7 @@ function Login({ onLogin }) {
   };
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      setError("Completa todos los campos");
-      return;
-    }
+    if (!email || !password) return setError("Completa todos los campos");
     setLoading(true);
     setError("");
     try {
@@ -29,29 +26,21 @@ function Login({ onLogin }) {
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "Error al iniciar sesión");
-        return;
-      }
+      if (!res.ok) throw new Error(data.error || "Error al iniciar sesión");
+      
       localStorage.setItem("logueado", "true");
       localStorage.setItem("usuario", JSON.stringify(data.usuario));
       onLogin();
-    } catch {
-      setError("Error de conexión");
+    } catch (err) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
   const handleRegistro = async () => {
-    if (!nombre || !email || !password) {
-      setError("Completa todos los campos");
-      return;
-    }
-    if (password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres");
-      return;
-    }
+    if (!nombre || !email || !password) return setError("Completa todos los campos");
+    if (password.length < 6) return setError("Mínimo 6 caracteres");
     setLoading(true);
     setError("");
     try {
@@ -60,134 +49,86 @@ function Login({ onLogin }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nombre, email, password }),
       });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "Error al registrarse");
-        return;
-      }
+      if (!res.ok) throw new Error("Error al registrarse");
       setModo("login");
       limpiar();
-      setError("");
-    } catch {
-      setError("Error de conexión");
+    } catch (err) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="bg-black min-h-screen flex items-center justify-center px-6">
+    <div className="bg-black min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
+      
+      {/* FONDO NEON RADIAL */}
+      <div className="absolute w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] -top-20 -right-20 animate-pulse" />
+      <div className="absolute w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-[120px] -bottom-20 -left-20" />
 
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-pink-500 rounded-full opacity-10 blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-pink-700 rounded-full opacity-10 blur-3xl" />
-      </div>
-
-      <div className="relative w-full max-w-md">
-
-        {/* Logo */}
+      <div className="relative w-full max-w-md z-10">
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-pink-500 rounded-2xl mb-4">
-            <span className="text-3xl font-black text-black">J</span>
-          </div>
-          <h1 className="text-4xl font-black text-white">JOTITAS</h1>
-          <p className="text-gray-500 mt-2">Ropa urbana con estilo</p>
+          <h1 className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-500 tracking-tighter">
+            JOTITAS
+          </h1>
+          <p className="text-cyan-400/80 font-mono text-sm tracking-[0.2em] uppercase mt-2">Urban Wear • 2026</p>
         </div>
 
-        {/* Card */}
-        <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-3xl shadow-2xl">
+        {/* CARD CON BORDE BRILLANTE */}
+        <div className="bg-zinc-950/80 backdrop-blur-2xl p-8 rounded-[2rem] border border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] relative">
+          
+          {/* EFECTO DE LUZ EN BORDE */}
+          <div className="absolute inset-0 rounded-[2rem] border border-purple-500/20 pointer-events-none" />
 
-          {/* Tabs */}
-          <div className="flex bg-zinc-800 rounded-2xl p-1 mb-6">
-            <button
-              onClick={() => { setModo("login"); limpiar(); }}
-              className={`flex-1 py-2 rounded-xl font-bold transition text-sm ${
-                modo === "login" ? "bg-pink-500 text-white" : "text-gray-400"
-              }`}
-            >
-              Iniciar sesión
-            </button>
-            <button
-              onClick={() => { setModo("registro"); limpiar(); }}
-              className={`flex-1 py-2 rounded-xl font-bold transition text-sm ${
-                modo === "registro" ? "bg-pink-500 text-white" : "text-gray-400"
-              }`}
-            >
-              Registrarse
-            </button>
+          {/* TABS NEON */}
+          <div className="flex bg-black rounded-2xl p-1.5 mb-8 border border-zinc-800">
+            {["login", "registro"].map((m) => (
+              <button
+                key={m}
+                onClick={() => setModo(m)}
+                className={`flex-1 py-3 rounded-xl font-black text-sm uppercase tracking-widest transition-all ${
+                  modo === m 
+                    ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-[0_0_20px_rgba(168,85,247,0.4)]" 
+                    : "text-zinc-500 hover:text-zinc-300"
+                }`}
+              >
+                {m === "login" ? "Acceder" : "Unirse"}
+              </button>
+            ))}
           </div>
 
-          {/* Nombre (solo registro) */}
-          {modo === "registro" && (
-            <div className="mb-4">
-              <label className="text-sm text-gray-400 mb-2 block">Nombre</label>
-              <input
-                type="text"
-                placeholder="Tu nombre"
-                value={nombre}
-                onChange={(e) => { setNombre(e.target.value); setError(""); }}
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 outline-none focus:border-pink-500 transition text-white placeholder-gray-600"
-              />
-            </div>
-          )}
-
-          {/* Email */}
-          <div className="mb-4">
-            <label className="text-sm text-gray-400 mb-2 block">
-              Correo electrónico
-            </label>
-            <input
-              type="email"
-              placeholder="tucorreo@gmail.com"
-              value={email}
-              onChange={(e) => { setEmail(e.target.value); setError(""); }}
-              onKeyDown={(e) => e.key === "Enter" && (modo === "login" ? handleLogin() : handleRegistro())}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 outline-none focus:border-pink-500 transition text-white placeholder-gray-600"
-            />
+          {/* INPUTS ESTILO TECH */}
+          <div className="space-y-6">
+            {modo === "registro" && (
+              <Input label="Nombre" value={nombre} onChange={setNombre} />
+            )}
+            <Input label="Email" type="email" value={email} onChange={setEmail} />
+            <Input label="Contraseña" type="password" value={password} onChange={setPassword} />
           </div>
 
-          {/* Password */}
-          <div className="mb-6">
-            <label className="text-sm text-gray-400 mb-2 block">
-              Contraseña
-            </label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => { setPassword(e.target.value); setError(""); }}
-              onKeyDown={(e) => e.key === "Enter" && (modo === "login" ? handleLogin() : handleRegistro())}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 outline-none focus:border-pink-500 transition text-white placeholder-gray-600"
-            />
-          </div>
-
-          {/* Error */}
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 mb-4">
-              <p className="text-red-400 text-sm text-center">{error}</p>
-            </div>
-          )}
-
-          {/* Botón */}
           <button
             onClick={modo === "login" ? handleLogin : handleRegistro}
-            disabled={loading}
-            className="w-full bg-pink-500 hover:bg-pink-600 disabled:opacity-50 py-4 rounded-xl font-bold transition text-white"
+            className="w-full mt-8 bg-white hover:bg-cyan-400 text-black py-4 rounded-2xl font-black text-lg transition-all hover:shadow-[0_0_30px_rgba(34,211,238,0.6)] active:scale-95"
           >
-            {loading
-              ? "Cargando..."
-              : modo === "login"
-              ? "Entrar"
-              : "Crear cuenta"}
+            {modo === "login" ? "INGRESAR AL SISTEMA" : "CREAR CUENTA"}
           </button>
-
         </div>
-
-        <p className="text-center text-zinc-700 text-xs mt-6">
-          © 2026 JOTITAS — Todos los derechos reservados
-        </p>
-
       </div>
+    </div>
+  );
+}
+
+// Componente pequeño para limpiar el código de los inputs
+function Input({ label, type = "text", value, onChange }) {
+  return (
+    <div>
+      <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-2 block">{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 text-white focus:border-purple-500 outline-none transition-all focus:ring-2 focus:ring-purple-500/20"
+      />
     </div>
   );
 }

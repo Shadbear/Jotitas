@@ -158,15 +158,16 @@ function App() {
       )}
 
       {/* 6. Catálogo de productos */}
-      <section id="tienda" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-6 md:px-10 pb-20">
-        {productosFiltrados.map((producto) => (
-          <ProductCard
-            key={producto.id}
-            producto={producto}
-            agregarAlCarrito={agregarAlCarrito}
-          />
-        ))}
-      </section>
+{/* Ahora usa 1 o 2 columnas como máximo para que no se vean apretados */}
+<section id="tienda" className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-6 md:px-10 pb-20">
+  {productosFiltrados.map((producto) => (
+    <ProductCard
+      key={producto.id}
+      producto={producto}
+      agregarAlCarrito={agregarAlCarrito}
+    />
+  ))}
+</section>
 
       {/* 7. Carrito y método de pago */}
       <section className="grid xl:grid-cols-2 gap-10 px-6 md:px-10 pb-20">

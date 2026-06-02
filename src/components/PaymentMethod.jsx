@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-function PaymentMethod({ carrito, onComprobanteSubido, onConfirmarPedido }) {
-  const [preview, setPreview] = useState(null);
+function PaymentMethod({ carrito, onConfirmarPedido }) {
+  const [numeroOperacion, setNumeroOperacion] = useState("");
   const [enviando, setEnviando] = useState(false);
 
   const total = carrito.reduce(
@@ -9,23 +9,20 @@ function PaymentMethod({ carrito, onComprobanteSubido, onConfirmarPedido }) {
     0
   );
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setPreview(url);
-      onComprobanteSubido?.(file);
+  const handleConfirmar = async () => {
+    if (numeroOperacion.length < 4) {
+      alert("Por favor, ingresa un número de operación válido.");
+      return;
     }
-  };
-
-  const eliminarImagen = () => {
-    setPreview(null);
-    onComprobanteSubido?.(null);
+    setEnviando(true);
+    // Llamamos a la función que viene de App.jsx pasando el número
+    await onConfirmarPedido(numeroOperacion);
+    setEnviando(false);
   };
 
   return (
     <div className="bg-zinc-900/50 p-8 rounded-3xl border border-purple-500/30 backdrop-blur-md shadow-[0_0_20px_rgba(168,85,247,0.1)]">
-
+      
       {/* Título */}
       <h2 className="text-3xl font-black text-white mb-6 flex items-center gap-3">
         <span className="text-4xl">💜</span> PAGO POR YAPE
@@ -52,50 +49,33 @@ function PaymentMethod({ carrito, onComprobanteSubido, onConfirmarPedido }) {
         </h3>
       </div>
 
-      {/* Upload comprobante */}
+      {/* Input Número de Operación */}
       <div className="space-y-4">
         <label className="block text-sm font-bold text-gray-400 uppercase tracking-wider">
-          Subir comprobante
+          Número de operación (Yape)
         </label>
 
         <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="w-full bg-black border border-purple-500/30 rounded-xl p-3 text-white file:bg-purple-600 file:border-0 file:px-4 file:py-2 file:rounded-lg file:text-white file:font-bold hover:file:bg-purple-700 transition-all"
+          type="text"
+          placeholder="Ingresa los dígitos de tu operación"
+          value={numeroOperacion}
+          onChange={(e) => setNumeroOperacion(e.target.value)}
+          className="w-full bg-black border border-purple-500/30 rounded-xl p-4 text-white placeholder-zinc-600 focus:border-purple-500 outline-none transition-all"
         />
-
-        {/* Preview del comprobante */}
-        {preview && (
-          <div className="mt-4 relative animate-in fade-in zoom-in">
-            <img
-              src={preview}
-              alt="Preview"
-              className="w-full h-48 object-cover rounded-xl border border-cyan-500/50"
-            />
-            <button
-              onClick={eliminarImagen}
-              className="absolute top-2 right-2 bg-red-500 p-2 rounded-lg text-xs font-bold text-white"
-            >
-              ELIMINAR
-            </button>
-          </div>
-        )}
 
         {/* Botón enviar */}
         <button
-          disabled={!preview || enviando}
-          onClick={onConfirmarPedido}
+          disabled={numeroOperacion.length < 4 || enviando}
+          onClick={handleConfirmar}
           className={`w-full py-4 rounded-xl font-black text-white transition-all ${
-            !preview || enviando
-              ? "bg-zinc-800 cursor-not-allowed"
+            numeroOperacion.length < 4 || enviando
+              ? "bg-zinc-800 cursor-not-allowed opacity-50"
               : "bg-purple-600 hover:bg-purple-700"
           }`}
         >
           {enviando ? "Procesando..." : "ENVIAR PEDIDO YAPE"}
         </button>
       </div>
-
     </div>
   );
 }

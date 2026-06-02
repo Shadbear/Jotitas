@@ -3,6 +3,8 @@ import { sql } from "@vercel/postgres";
 export default async function handler(req, res) {
 
   if (req.method === "GET") {
+    const pedidos = await sql`SELECT * FROM pedidos ORDER BY created_at DESC`;
+    return res.status(200).json(pedidos);
     try {
       const resultado = await sql`
         SELECT * FROM pedidos ORDER BY created_at DESC
@@ -11,6 +13,12 @@ export default async function handler(req, res) {
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }
+  }
+
+  if (req.method === "PATCH") {
+    const { id } = req.body;
+    await sql`UPDATE pedidos SET estado = 'pagado' WHERE id = ${id}`;
+    return res.status(200).json({ success: true });
   }
 
   if (req.method === "POST") {
@@ -42,6 +50,12 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: error.message });
     }
   }
+
+  // En tu api/pedidos.js
+if (req.method === "GET") {
+  const pedidos = await sql`SELECT * FROM pedidos ORDER BY created_at DESC`;
+  return res.status(200).json(pedidos);
+}
 
   return res.status(405).json({ error: "Método no permitido" });
 }

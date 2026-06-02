@@ -16,6 +16,11 @@ function App() {
   const [error, setError] = useState("");
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todos");
   const [busqueda, setBusqueda] = useState("");
+  const usuario = {
+  nombre: "Carlos",
+  email: "carlos@gmail.com",
+  foto: "https://lh3.googleusercontent.com/a/..." // Esta es la foto que se verá en tu Navbar
+};
 
   // Cargar productos desde API
   useEffect(() => {

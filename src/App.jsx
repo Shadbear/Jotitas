@@ -5,6 +5,7 @@ import ProductCard from "./components/ProductCard";
 import Cart from "./components/Cart";
 import PaymentMethod from "./components/PaymentMethod";
 import Login from "./pages/Login";
+import Hero from "./components/Hero";
 
 function App() {
 
@@ -102,17 +103,9 @@ function App() {
           localStorage.removeItem("logueado");
           setLogueado(false);
         }}
-        />         
+        />     
 
-      <section id="inicio" className="text-center py-28 px-6 bg-gradient-to-b from-black to-zinc-900">
-        <h1 className="text-white text-5xl font-bold neon-text animate-flicker">JOTITAS</h1>
-        <p className="text-gray-400 text-xl max-w-xl mx-auto">
-          Ropa Peruana con estilo único. Encuentra polos, poleras, pantalones, casacas, zapatillas y accesorios que reflejan tu personalidad. ¡Viste con actitud y marca tendencia con JOTITAS!
-        </p>
-        <a href="#tienda" className="inline-block mt-10 bg-neon-purple hover:opacity-90 shadow-neon-purple px-8 py-4 rounded-xl font-bold transition">
-          Ver productos
-        </a>
-      </section>
+        <Hero />
 
       <section className="px-6 md:px-10 pt-10">
         <input

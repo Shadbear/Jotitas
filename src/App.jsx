@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "./firebase";
-import { signInWithPopup } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "./firebase";
 import Navbar from "./components/Navbar";
 import ProductCard from "./components/ProductCard";
 import Cart from "./components/Cart";
@@ -16,8 +18,10 @@ function App() {
   const [carrito, setCarrito] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [enviando, setEnviando] = useState(false);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todos");
   const [busqueda, setBusqueda] = useState("");
+  const [comprobante, setComprobante] = useState(null);
 
   // Escuchar estado de autenticación Firebase
   useEffect(() => {
@@ -30,7 +34,7 @@ function App() {
         setLogueado(false);
       }
     });
-    return unsubscribe; // Limpieza al desmontar
+    return unsubscribe;
   }, []);
 
   // Cargar productos desde API
@@ -76,6 +80,17 @@ function App() {
     localStorage.setItem("carrito", JSON.stringify(carrito));
   }, [carrito]);
 
+  const provider = new GoogleAuthProvider();
+
+  const handleLogin = async () => {
+    try {
+      await signInWithPopup(auth, provider);
+      console.log("Login exitoso");
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+    }
+  };
+
   const agregarAlCarrito = (producto) => {
     const existe = carrito.find((item) => item.id === producto.id);
     if (existe) {
@@ -97,6 +112,11 @@ function App() {
 
   const vaciarCarrito = () => setCarrito([]);
 
+  const total = carrito.reduce(
+    (acc, item) => acc + parseFloat(item.precio) * (item.cantidad || 1),
+    0
+  );
+
   const productosFiltrados = productos.filter((producto) => {
     const coincideCategoria =
       categoriaSeleccionada === "Todos"
@@ -108,19 +128,51 @@ function App() {
     return coincideCategoria && coincideBusqueda;
   });
 
-  if (!logueado) {
-    return <Login />;
-  }
+  const manejarConfirmacionPedido = async (archivoComprobante) => {
+    if (!archivoComprobante) {
+      alert("Por favor, sube tu comprobante de Yape");
+      return;
+    }
+    try {
+      setEnviando(true);
 
-  // Y en tu función de login:
-const handleLogin = async () => {
-  try {
-    await signInWithPopup(auth, provider);
-    // El éxito se manejará automáticamente por tu onAuthStateChanged en App.jsx
-  } catch (error) {
-    console.error("Error al iniciar sesión:", error);
+      // 1. Subir a Firebase Storage
+      const storageRef = ref(storage, `comprobantes/${Date.now()}_${archivoComprobante.name}`);
+      await uploadBytes(storageRef, archivoComprobante);
+      const url = await getDownloadURL(storageRef);
+
+      // 2. Enviar a la API
+      const response = await fetch("/api/pedidos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          usuario_email: usuario.email,
+          nombre: usuario.displayName,
+          telefono: "999999999",
+          direccion: "Tu dirección aquí",
+          productos: carrito,
+          total: total,
+          metodo_pago: "YAPE",
+          comprobante: url,
+          estado: "pendiente",
+        }),
+      });
+
+      if (!response.ok) throw new Error("Error al guardar en la base de datos");
+
+      alert("¡Pedido realizado con éxito! Estamos verificando tu pago.");
+      vaciarCarrito();
+    } catch (error) {
+      console.error("Error completo:", error);
+      alert("Hubo un error al procesar el pedido.");
+    } finally {
+      setEnviando(false);
+    }
+  };
+
+  if (!logueado) {
+    return <Login onLogin={handleLogin} />;
   }
-};
 
   return (
     <div className="bg-[#050510] cyber-grid scanlines min-h-screen">
@@ -199,7 +251,11 @@ const handleLogin = async () => {
           eliminarDelCarrito={eliminarDelCarrito}
           vaciarCarrito={vaciarCarrito}
         />
-        <PaymentMethod carrito={carrito} />
+        <PaymentMethod
+          carrito={carrito}
+          onComprobanteSubido={(file) => setComprobante(file)}
+          onConfirmarPedido={() => manejarConfirmacionPedido(comprobante)}
+        />
       </section>
 
     </div>

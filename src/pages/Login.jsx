@@ -68,12 +68,10 @@ function Login({ onLogin }) {
       <div className="absolute w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-[120px] -bottom-20 -left-20" />
 
       <div className="relative w-full max-w-md z-10">
-        <div className="text-center mb-10">
-          <h1 className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-500 tracking-tighter">
-            JOTITAS
-          </h1>
-          <p className="text-cyan-400/80 font-mono text-sm tracking-[0.2em] uppercase mt-2">Urban Wear • 2026</p>
-        </div>
+       <div className="login-container">
+      <h1>Bienvenido a Jotitas</h1>
+      <button onClick={onLogin}>Iniciar sesión con Google</button>
+    </div>
 
         {/* CARD CON BORDE BRILLANTE */}
         <div className="bg-zinc-950/80 backdrop-blur-2xl p-8 rounded-[2rem] border border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] relative">

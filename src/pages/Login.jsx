@@ -1,4 +1,7 @@
 import { useState } from "react";
+// Asegúrate de que esta línea esté exactamente así en tu Login.jsx
+import { auth, provider } from "../firebase"; 
+import { signInWithPopup } from "firebase/auth";
 
 function Login({ onLogin }) {
   const [modo, setModo] = useState("login");
@@ -15,24 +18,22 @@ function Login({ onLogin }) {
     setError("");
   };
 
-  const handleLogin = async () => {
-    if (!email || !password) return setError("Completa todos los campos");
+  const handleLoginGoogle = async () => {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Error al iniciar sesión");
+      // Esto abre la ventana de Google y gestiona todo automáticamente
+      const result = await signInWithPopup(auth, provider);
       
+      // Si llegamos aquí, ¡el usuario ya inició sesión!
+      console.log("Usuario autenticado:", result.user);
+      
+      // Guardamos que está logueado y notificamos a App.jsx
       localStorage.setItem("logueado", "true");
-      localStorage.setItem("usuario", JSON.stringify(data.usuario));
-      onLogin();
+      onLogin(); 
     } catch (err) {
-      setError(err.message);
+      console.error("Error al ingresar:", err);
+      setError("No se pudo conectar con Google: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -107,11 +108,11 @@ function Login({ onLogin }) {
           </div>
 
           <button
-            onClick={modo === "login" ? handleLogin : handleRegistro}
-            className="w-full mt-8 bg-white hover:bg-cyan-400 text-black py-4 rounded-2xl font-black text-lg transition-all hover:shadow-[0_0_30px_rgba(34,211,238,0.6)] active:scale-95"
-          >
-            {modo === "login" ? "INGRESAR AL SISTEMA" : "CREAR CUENTA"}
-          </button>
+  onClick={handleLoginGoogle} // <-- Usa la nueva función
+  className="w-full mt-8 bg-white hover:bg-cyan-400 text-black py-4 rounded-2xl font-black text-lg transition-all ..."
+>
+  INGRESAR CON GOOGLE
+</button>
         </div>
       </div>
     </div>

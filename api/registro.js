@@ -8,29 +8,43 @@ export default async function handler(req, res) {
 
   const { email, password, nombre } = req.body;
 
+  // 1. Validación estricta
   if (!email || !password || !nombre) {
-    return res.status(400).json({ error: "Faltan campos" });
+    return res.status(400).json({ error: "Todos los campos son obligatorios" });
+  }
+
+  // 2. Validación de formato de email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ error: "Formato de correo inválido" });
   }
 
   try {
-    const existe = await sql`
-      SELECT id FROM usuarios WHERE email = ${email}
+    // 3. Normalizar email a minúsculas para evitar duplicados accidentales
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // 4. Verificación de existencia
+    const { rowCount } = await sql`
+      SELECT id FROM usuarios WHERE email = ${normalizedEmail}
     `;
 
-    if (existe.rows.length > 0) {
+    if (rowCount > 0) {
       return res.status(409).json({ error: "Este correo ya está registrado" });
     }
 
-    const hash = await bcrypt.hash(password, 10);
+    // 5. Hash con mayor complejidad (salt rounds)
+    const hash = await bcrypt.hash(password, 12);
 
+    // 6. Inserción segura
     await sql`
       INSERT INTO usuarios (email, password, nombre)
-      VALUES (${email}, ${hash}, ${nombre})
+      VALUES (${normalizedEmail}, ${hash}, ${nombre.trim()})
     `;
 
-    return res.status(201).json({ ok: true });
+    return res.status(201).json({ message: "Usuario registrado con éxito" });
 
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    console.error("Error en registro:", error);
+    return res.status(500).json({ error: "Error interno del servidor" });
   }
 }

@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { auth } from "./firebase";
+import { signInWithPopup } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import Navbar from "./components/Navbar";
 import ProductCard from "./components/ProductCard";
 import Cart from "./components/Cart";
@@ -7,20 +10,28 @@ import Login from "./pages/Login";
 import Hero from "./components/Hero";
 
 function App() {
-  const [logueado, setLogueado] = useState(
-    localStorage.getItem("logueado") === "true"
-  );
+  const [logueado, setLogueado] = useState(false);
+  const [usuario, setUsuario] = useState(null);
   const [productos, setProductos] = useState([]);
   const [carrito, setCarrito] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todos");
   const [busqueda, setBusqueda] = useState("");
-  const usuario = {
-  nombre: "Carlos",
-  email: "carlos@gmail.com",
-  foto: "https://lh3.googleusercontent.com/a/..." // Esta es la foto que se verá en tu Navbar
-};
+
+  // Escuchar estado de autenticación Firebase
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUsuario(user);
+        setLogueado(true);
+      } else {
+        setUsuario(null);
+        setLogueado(false);
+      }
+    });
+    return unsubscribe; // Limpieza al desmontar
+  }, []);
 
   // Cargar productos desde API
   useEffect(() => {
@@ -80,16 +91,9 @@ function App() {
     }
   };
 
-  const eliminarDelCarrito = (indexAEliminar) => {
-  const nuevoCarrito = carrito.filter((_, index) => index !== indexAEliminar);
-  setCarrito(nuevoCarrito);
-};
-
-// Y en tu componente Cart dentro de App.jsx:
-<Cart 
-  carrito={carrito} 
-  eliminarDelCarrito={eliminarDelCarrito} 
-/>
+  const eliminarDelCarrito = (id) => {
+    setCarrito(carrito.filter((item) => item.id !== id));
+  };
 
   const vaciarCarrito = () => setCarrito([]);
 
@@ -105,19 +109,27 @@ function App() {
   });
 
   if (!logueado) {
-    return <Login onLogin={() => setLogueado(true)} />;
+    return <Login />;
   }
+
+  // Y en tu función de login:
+const handleLogin = async () => {
+  try {
+    await signInWithPopup(auth, provider);
+    // El éxito se manejará automáticamente por tu onAuthStateChanged en App.jsx
+  } catch (error) {
+    console.error("Error al iniciar sesión:", error);
+  }
+};
 
   return (
     <div className="bg-[#050510] cyber-grid scanlines min-h-screen">
 
       {/* Navbar */}
       <Navbar
-        carrito={carrito}
-        onLogout={() => {
-          localStorage.removeItem("logueado");
-          setLogueado(false);
-        }}
+        usuario={usuario}
+        carritoLength={carrito.reduce((acc, item) => acc + item.cantidad, 0)}
+        onLogout={() => auth.signOut()}
       />
 
       {/* 1. Hero */}
@@ -170,16 +182,15 @@ function App() {
       )}
 
       {/* 6. Catálogo de productos */}
-{/* Ahora usa 1 o 2 columnas como máximo para que no se vean apretados */}
-<section id="tienda" className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-6 md:px-10 pb-20">
-  {productosFiltrados.map((producto) => (
-    <ProductCard
-      key={producto.id}
-      producto={producto}
-      agregarAlCarrito={agregarAlCarrito}
-    />
-  ))}
-</section>
+      <section id="tienda" className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-6 md:px-10 pb-20">
+        {productosFiltrados.map((producto) => (
+          <ProductCard
+            key={producto.id}
+            producto={producto}
+            agregarAlCarrito={agregarAlCarrito}
+          />
+        ))}
+      </section>
 
       {/* 7. Carrito y método de pago */}
       <section className="grid xl:grid-cols-2 gap-10 px-6 md:px-10 pb-20">

@@ -2,9 +2,8 @@ import { sql } from "@vercel/postgres";
 
 export default async function handler(req, res) {
 
+  // GET - Obtener todos los pedidos
   if (req.method === "GET") {
-    const pedidos = await sql`SELECT * FROM pedidos ORDER BY created_at DESC`;
-    return res.status(200).json(pedidos);
     try {
       const resultado = await sql`
         SELECT * FROM pedidos ORDER BY created_at DESC
@@ -15,12 +14,7 @@ export default async function handler(req, res) {
     }
   }
 
-  if (req.method === "PATCH") {
-    const { id } = req.body;
-    await sql`UPDATE pedidos SET estado = 'pagado' WHERE id = ${id}`;
-    return res.status(200).json({ success: true });
-  }
-
+  // POST - Crear nuevo pedido
   if (req.method === "POST") {
     const { usuario_email, nombre, telefono, direccion, productos, total, comprobante } = req.body;
 
@@ -39,23 +33,18 @@ export default async function handler(req, res) {
     }
   }
 
+  // PATCH - Aprobar pedido
   if (req.method === "PATCH") {
-    const { id, estado } = req.body;
+    const { id } = req.body;
     try {
       await sql`
-        UPDATE pedidos SET estado = ${estado} WHERE id = ${id}
+        UPDATE pedidos SET estado = 'pagado' WHERE id = ${id}
       `;
       return res.status(200).json({ ok: true });
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }
   }
-
-  // En tu api/pedidos.js
-if (req.method === "GET") {
-  const pedidos = await sql`SELECT * FROM pedidos ORDER BY created_at DESC`;
-  return res.status(200).json(pedidos);
-}
 
   return res.status(405).json({ error: "Método no permitido" });
 }

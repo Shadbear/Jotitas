@@ -100,6 +100,21 @@ body {
   100% { transform: translate(0); }
 }
 
+:root {
+  /* Cambia el color principal por el morado neón */
+  --accent: #bf00ff; 
+  
+  /* Puedes usar un tono más suave para el fondo del acento */
+  --accent-bg: rgba(191, 0, 255, 0.1); 
+  
+  /* Para el borde del efecto neón */
+  --accent-border: #bf00ff; 
+  
+  /* Otras variables que puedes ajustar si quieres un look más oscuro */
+  --border: #33104d; /* Un morado muy oscuro para los bordes */
+  --text-h: #ffffff;
+}
+
 .animate-flicker { animation: flicker 4s infinite; }
 .animate-pulse-neon { animation: pulse-neon 2s infinite; }
 .animate-glitch:hover { animation: glitch 0.3s infinite; }

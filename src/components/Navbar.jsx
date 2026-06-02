@@ -1,261 +1,45 @@
 import { useState } from "react";
+import { Home, ShoppingBag, CreditCard, ShoppingCart, LogOut, User } from "lucide-react";
 
 function Navbar({ carrito, onLogout }) {
-
   const [menuAbierto, setMenuAbierto] = useState(false);
 
-  const scrollToSection = (id) => {
-    const section = document.getElementById(id);
-    if (section) {
-      section.scrollIntoView({
-        behavior: "smooth",
-      });
-    }
-    setMenuAbierto(false);
-  };
+  // Supongamos que tienes el nombre del usuario guardado
+  const nombreUsuario = "Carlos"; 
 
   return (
-    <nav className="
-      sticky
-      top-0
-      z-50
-      backdrop-blur-lg
-      bg-black/80
-      border-b
-      border-purple-500/30
-      px-6
-      md:px-10
-      py-5
-      neon-border
-    ">
-
-      <div className="
-        flex
-        justify-between
-        items-center
-      ">
-
+    <nav className="sticky top-0 z-50 backdrop-blur-lg bg-black/80 border-b border-purple-500/30 px-6 py-4 neon-border">
+      <div className="flex justify-between items-center">
+        
         {/* LOGO */}
-        <div
-          onClick={() => scrollToSection("inicio")}
-          className="
-            cursor-pointer
-            flex
-            items-center
-            gap-3
-            group
-          "
-        >
-
-<div className="w-12 h-12 bg-neon-pink shadow-neon ..."> 
-  J
-</div>
-
-          <div>
-            <h1 className="
-              text-3xl
-              font-black
-              tracking-widest
-              bg-gradient-to-r
-              from-purple-400
-              via-purple-500
-              to-cyan-400
-              bg-clip-text
-              text-transparent
-              neon-text
-            ">
-              JOTITAS
-            </h1>
-            <p className="text-cyan-400 text-xs font-bold tracking-widest">
-              CYBERWEAR
-            </p>
-          </div>
-
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center font-bold text-white neon-border">J</div>
+          <h1 className="text-xl font-black text-white neon-text">JOTITAS</h1>
         </div>
 
-        {/* DESKTOP MENU */}
-        <div className="
-          hidden
-          md:flex
-          items-center
-          gap-8
-        ">
-
-          <button
-            onClick={() => scrollToSection("inicio")}
-            className="
-              text-purple-300
-              hover:text-cyan-400
-              transition
-              font-bold
-              tracking-wide
-              hover:neon-cyan
-            "
-          >
-            INICIO
-          </button>
-
-          <button
-            onClick={() => scrollToSection("tienda")}
-            className="
-              text-purple-300
-              hover:text-cyan-400
-              transition
-              font-bold
-              tracking-wide
-            "
-          >
-            TIENDA
-          </button>
-
-          <button
-            onClick={() => scrollToSection("contacto")}
-            className="
-              text-purple-300
-              hover:text-cyan-400
-              transition
-              font-bold
-              tracking-wide
-            "
-          >
-            PAGO
-          </button>
-
-          {/* CARRITO */}
-          <div className="
-            bg-gradient-to-r
-            from-purple-600
-            to-cyan-500
-            px-6
-            py-3
-            rounded-xl
-            font-bold
-            flex
-            items-center
-            gap-2
-            neon-border
-            animate-pulse-neon
-          ">
-
-            <span className="text-2xl">
-              🛒
-            </span>
-
-            <span className="text-white">
-              {carrito.length}
-            </span>
-
+        {/* MENÚ DESKTOP */}
+        <div className="hidden md:flex items-center gap-6">
+          <button className="flex items-center gap-2 text-purple-300 hover:text-cyan-400"><Home size={18}/> INICIO</button>
+          <button className="flex items-center gap-2 text-purple-300 hover:text-cyan-400"><ShoppingBag size={18}/> TIENDA</button>
+          <button className="flex items-center gap-2 text-purple-300 hover:text-cyan-400"><CreditCard size={18}/> PAGO</button>
+          
+          {/* PERFIL USUARIO */}
+          <div className="flex items-center gap-3 pl-6 border-l border-purple-500/30">
+            <div className="text-right">
+              <p className="text-sm font-bold text-white">{nombreUsuario}</p>
+            </div>
+            <img src="https://i.pravatar.cc/150?u=carlos" alt="Perfil" className="w-10 h-10 rounded-full border-2 border-cyan-400 neon-border-cyan" />
           </div>
 
-          {/* SALIR */}
-          <button
-            onClick={onLogout}
-            className="
-              border
-              border-cyan-400
-              text-cyan-400
-              hover:bg-cyan-400
-              hover:text-black
-              px-6
-              py-3
-              rounded-xl
-              font-bold
-              transition
-              neon-border-cyan
-            "
-          >
-            SALIR
+          <div className="flex items-center gap-2 bg-purple-900/30 px-4 py-2 rounded-lg neon-border">
+            <ShoppingCart size={18} /> {carrito.length}
+          </div>
+
+          <button onClick={onLogout} className="text-cyan-400 hover:text-white transition">
+            <LogOut size={20} />
           </button>
-
         </div>
-
-        {/* MOBILE BUTTON */}
-        <button
-          onClick={() => setMenuAbierto(!menuAbierto)}
-          className="
-            md:hidden
-            text-3xl
-            text-purple-400
-          "
-        >
-          ☰
-        </button>
-
       </div>
-
-      {/* MOBILE MENU */}
-      {menuAbierto && (
-
-        <div className="
-          md:hidden
-          mt-6
-          flex
-          flex-col
-          gap-4
-          bg-purple-900/20
-          border
-          border-purple-500/30
-          p-6
-          rounded-2xl
-          neon-border
-        ">
-
-          <button
-            onClick={() => scrollToSection("inicio")}
-            className="text-left text-purple-300 font-bold hover:text-cyan-400"
-          >
-            INICIO
-          </button>
-
-          <button
-            onClick={() => scrollToSection("tienda")}
-            className="text-left text-purple-300 font-bold hover:text-cyan-400"
-          >
-            TIENDA
-          </button>
-
-          <button
-            onClick={() => scrollToSection("contacto")}
-            className="text-left text-purple-300 font-bold hover:text-cyan-400"
-          >
-            PAGO
-          </button>
-
-          <div className="
-            bg-gradient-to-r
-            from-purple-600
-            to-cyan-500
-            px-4
-            py-3
-            rounded-xl
-            font-bold
-            text-center
-            text-white
-            neon-border
-          ">
-            🛒 {carrito.length}
-          </div>
-
-          <button
-            onClick={onLogout}
-            className="
-              border
-              border-cyan-400
-              text-cyan-400
-              px-4
-              py-3
-              rounded-xl
-              font-bold
-              neon-border-cyan
-            "
-          >
-            SALIR
-          </button>
-
-        </div>
-
-      )}
-
     </nav>
   );
 }

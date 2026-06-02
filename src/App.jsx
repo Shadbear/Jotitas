@@ -94,7 +94,7 @@ function App() {
   }
 
   return (
-    <div className="bg-black min-h-screen text-white overflow-x-hidden">
+    <div className="bg-[#050510] cyber-grid scanlines min-h-screen">
 
       <Navbar
         carrito={carrito}
@@ -105,36 +105,38 @@ function App() {
         />         
 
       <section id="inicio" className="text-center py-28 px-6 bg-gradient-to-b from-black to-zinc-900">
-        <h1 className="text-6xl md:text-8xl font-black mb-6">JOTITAS</h1>
+        <h1 className="text-white text-5xl font-bold neon-text animate-flicker">JOTITAS</h1>
         <p className="text-gray-400 text-xl max-w-xl mx-auto">
-          Ropa urbana con estilo.
+          Ropa Peruana con estilo único. Encuentra polos, poleras, pantalones, casacas, zapatillas y accesorios que reflejan tu personalidad. ¡Viste con actitud y marca tendencia con JOTITAS!
         </p>
-        <a href="#tienda" className="inline-block mt-10 bg-pink-500 hover:bg-pink-600 px-8 py-4 rounded-xl font-bold transition">
+        <a href="#tienda" className="inline-block mt-10 bg-neon-purple hover:opacity-90 shadow-neon-purple px-8 py-4 rounded-xl font-bold transition">
           Ver productos
         </a>
       </section>
 
       <section className="px-6 md:px-10 pt-10">
         <input
-          type="text"
-          placeholder="Buscar ropa..."
-          value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
-          className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-5 outline-none focus:border-pink-500"
-        />
+  type="text"
+  placeholder="Buscar ropa..."
+  value={busqueda}
+  onChange={(e) => setBusqueda(e.target.value)}
+  className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-5 outline-none focus:border-neon-purple focus:shadow-neon-purple transition-all"
+/>
       </section>
 
       <section className="flex flex-wrap gap-4 px-6 md:px-10 py-10">
         {["Todos", "Polos", "Poleras", "Pantalones", "Casacas", "Zapatillas", "Accesorios"].map((categoria) => (
           <button
-            key={categoria}
-            onClick={() => setCategoriaSeleccionada(categoria)}
-            className={`px-6 py-3 rounded-2xl ${
-              categoriaSeleccionada === categoria ? "bg-pink-500" : "bg-zinc-900"
-            }`}
-          >
-            {categoria}
-          </button>
+  key={categoria}
+  onClick={() => setCategoriaSeleccionada(categoria)}
+  className={`px-6 py-3 rounded-2xl transition-all ${
+    categoriaSeleccionada === categoria 
+      ? "bg-neon-purple shadow-neon-purple text-white" 
+      : "bg-zinc-900 text-gray-400"
+  }`}
+>
+  {categoria}
+</button>
         ))}
       </section>
 

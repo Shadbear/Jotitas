@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import Navbar from "./components/Navbar";
 import ProductCard from "./components/ProductCard";
 import Cart from "./components/Cart";
@@ -8,11 +7,9 @@ import Login from "./pages/Login";
 import Hero from "./components/Hero";
 
 function App() {
-
   const [logueado, setLogueado] = useState(
     localStorage.getItem("logueado") === "true"
   );
-
   const [productos, setProductos] = useState([]);
   const [carrito, setCarrito] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,6 +17,7 @@ function App() {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todos");
   const [busqueda, setBusqueda] = useState("");
 
+  // Cargar productos desde API
   useEffect(() => {
     const cargarProductos = async () => {
       try {
@@ -36,7 +34,7 @@ function App() {
         }));
         setProductos(productosLimpios);
       } catch (error) {
-        console.log(error);
+        console.error(error);
         setError("No se pudieron cargar productos");
       } finally {
         setLoading(false);
@@ -45,6 +43,7 @@ function App() {
     cargarProductos();
   }, []);
 
+  // Cargar carrito desde localStorage
   useEffect(() => {
     const guardado = localStorage.getItem("carrito");
     if (guardado) {
@@ -56,6 +55,7 @@ function App() {
     }
   }, []);
 
+  // Guardar carrito en localStorage
   useEffect(() => {
     localStorage.setItem("carrito", JSON.stringify(carrito));
   }, [carrito]);
@@ -63,11 +63,13 @@ function App() {
   const agregarAlCarrito = (producto) => {
     const existe = carrito.find((item) => item.id === producto.id);
     if (existe) {
-      setCarrito(carrito.map((item) =>
-        item.id === producto.id
-          ? { ...item, cantidad: (item.cantidad || 1) + 1 }
-          : item
-      ));
+      setCarrito(
+        carrito.map((item) =>
+          item.id === producto.id
+            ? { ...item, cantidad: (item.cantidad || 1) + 1 }
+            : item
+        )
+      );
     } else {
       setCarrito([...carrito, { ...producto, cantidad: 1 }]);
     }
@@ -97,57 +99,65 @@ function App() {
   return (
     <div className="bg-[#050510] cyber-grid scanlines min-h-screen">
 
+      {/* Navbar */}
       <Navbar
         carrito={carrito}
         onLogout={() => {
           localStorage.removeItem("logueado");
           setLogueado(false);
         }}
-        />     
+      />
 
-        <Hero />
+      {/* 1. Hero */}
+      <Hero />
 
+      {/* 2. Buscador */}
       <section className="px-6 md:px-10 pt-10">
         <input
-  type="text"
-  placeholder="Buscar ropa..."
-  value={busqueda}
-  onChange={(e) => setBusqueda(e.target.value)}
-  className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-5 outline-none focus:border-neon-purple focus:shadow-neon-purple transition-all"
-/>
+          type="text"
+          placeholder="Buscar producto..."
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+          className="w-full bg-zinc-900 text-white px-5 py-3 rounded-xl outline-none border border-zinc-700 focus:border-neon-purple transition-all"
+        />
       </section>
 
+      {/* 3. Filtros por categoría */}
       <section className="flex flex-wrap gap-4 px-6 md:px-10 py-10">
-        {["Todos", "Polos", "Poleras", "Pantalones", "Casacas", "Zapatillas", "Accesorios"].map((categoria) => (
-          <button
-  key={categoria}
-  onClick={() => setCategoriaSeleccionada(categoria)}
-  className={`px-6 py-3 rounded-2xl transition-all ${
-    categoriaSeleccionada === categoria 
-      ? "bg-neon-purple shadow-neon-purple text-white" 
-      : "bg-zinc-900 text-gray-400"
-  }`}
->
-  {categoria}
-</button>
-        ))}
+        {["Todos", "Polos", "Poleras", "Pantalones", "Casacas", "Zapatillas", "Accesorios"].map(
+          (categoria) => (
+            <button
+              key={categoria}
+              onClick={() => setCategoriaSeleccionada(categoria)}
+              className={`px-6 py-3 rounded-2xl transition-all ${
+                categoriaSeleccionada === categoria
+                  ? "bg-neon-purple shadow-neon-purple text-white"
+                  : "bg-zinc-900 text-gray-400"
+              }`}
+            >
+              {categoria}
+            </button>
+          )
+        )}
       </section>
 
-      <section className="flex justify-between px-6 md:px-10 pb-10">
-        <h2 className="text-4xl font-bold">Productos</h2>
-        <div className="bg-zinc-900 px-5 py-2 rounded-xl">
+      {/* 4. Encabezado del catálogo */}
+      <section className="flex justify-between items-center px-6 md:px-10 pb-10">
+        <h2 className="text-4xl font-bold text-white">Productos</h2>
+        <div className="bg-zinc-900 text-white px-5 py-2 rounded-xl">
           {productosFiltrados.length}
         </div>
       </section>
 
+      {/* 5. Estados de carga y error */}
       {loading && (
         <div className="text-center py-20 text-pink-400 text-2xl">Cargando...</div>
       )}
-
       {error && (
         <div className="text-center text-red-500 py-20">{error}</div>
       )}
 
+      {/* 6. Catálogo de productos */}
       <section id="tienda" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-6 md:px-10 pb-20">
         {productosFiltrados.map((producto) => (
           <ProductCard
@@ -158,6 +168,7 @@ function App() {
         ))}
       </section>
 
+      {/* 7. Carrito y método de pago */}
       <section className="grid xl:grid-cols-2 gap-10 px-6 md:px-10 pb-20">
         <Cart
           carrito={carrito}

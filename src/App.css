@@ -197,3 +197,6 @@
   --border: #33104d; /* Un morado muy oscuro para los bordes */
   --text-h: #ffffff;
 }
+
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #6b21a8; border-radius: 10px; }

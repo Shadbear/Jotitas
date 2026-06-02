@@ -75,9 +75,16 @@ function App() {
     }
   };
 
-  const eliminarDelCarrito = (id) => {
-    setCarrito(carrito.filter((item) => item.id !== id));
-  };
+  const eliminarDelCarrito = (indexAEliminar) => {
+  const nuevoCarrito = carrito.filter((_, index) => index !== indexAEliminar);
+  setCarrito(nuevoCarrito);
+};
+
+// Y en tu componente Cart dentro de App.jsx:
+<Cart 
+  carrito={carrito} 
+  eliminarDelCarrito={eliminarDelCarrito} 
+/>
 
   const vaciarCarrito = () => setCarrito([]);
 
@@ -159,7 +166,7 @@ function App() {
 
       {/* 6. Catálogo de productos */}
 {/* Ahora usa 1 o 2 columnas como máximo para que no se vean apretados */}
-<section id="tienda" className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-6 md:px-10 pb-20">
+<section id="tienda" className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-6 md:px-10 pb-20">
   {productosFiltrados.map((producto) => (
     <ProductCard
       key={producto.id}

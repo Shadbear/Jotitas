@@ -1,125 +1,70 @@
 function Cart({ carrito, eliminarDelCarrito }) {
-
   const total = carrito.reduce(
-    (acc, item) => acc + parseFloat(item.precio),
+    (acc, item) => acc + parseFloat(item.precio || 0),
     0
   );
 
   return (
-    <div className="bg-zinc-900 p-8 rounded-3xl shadow-2xl">
-
+    <div className="bg-zinc-900/50 backdrop-blur-md p-8 rounded-3xl border border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.1)]">
+      
+      {/* HEADER */}
       <div className="flex items-center justify-between mb-8">
-
-        <h2 className="text-4xl font-bold">
+        <h2 className="text-3xl font-black text-white uppercase tracking-widest">
           Carrito
         </h2>
-
-        <div className="bg-pink-500 px-4 py-2 rounded-full font-bold">
-          {carrito.length}
+        <div className="bg-purple-600 px-4 py-1 rounded-full font-bold text-sm border border-purple-400">
+          {carrito.length} ITEM(S)
         </div>
-
       </div>
 
       {carrito.length === 0 ? (
-
-        <div className="text-center py-20">
-
-          <div className="text-7xl mb-6">
-            🛒
-          </div>
-
-          <p className="text-gray-400 text-xl">
-            Tu carrito está vacío
-          </p>
-
+        <div className="text-center py-16 border-2 border-dashed border-zinc-800 rounded-2xl">
+          <div className="text-6xl mb-4">🛒</div>
+          <p className="text-zinc-400">Tu carrito está vacío</p>
         </div>
-
       ) : (
-
         <>
-          <div className="space-y-5 max-h-[500px] overflow-y-auto pr-2">
-
+          <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
             {carrito.map((item, index) => (
-
               <div
                 key={index}
-                className="
-                  bg-black
-                  border
-                  border-gray-800
-                  rounded-2xl
-                  p-4
-                  flex
-                  items-center
-                  justify-between
-                "
+                className="bg-black/40 border border-zinc-800 rounded-2xl p-4 flex items-center gap-4 hover:border-purple-500/50 transition-all"
               >
-
-                <div className="flex items-center gap-4">
-
-                  <img
-                    src={item.imagen}
-                    alt={item.nombre}
-                    className="w-20 h-20 object-cover rounded-xl"
-                  />
-
-                  <div>
-
-                    <h3 className="font-bold text-lg">
-                      {item.nombre}
-                    </h3>
-
-                    <p className="text-gray-400 text-sm">
-                      {item.categoria}
-                    </p>
-
-                    <p className="text-pink-400 font-bold mt-1">
-                      S/ {item.precio.toFixed(2)}
-                    </p>
-
-                  </div>
-
+                <img
+                  src={item.imagen}
+                  alt={item.nombre}
+                  className="w-16 h-16 object-cover rounded-xl border border-zinc-700"
+                />
+                <div className="flex-grow">
+                  <h3 className="font-bold text-white">{item.nombre}</h3>
+                  <p className="text-cyan-400 font-bold text-sm">S/ {parseFloat(item.precio).toFixed(2)}</p>
                 </div>
-
+                
+                {/* BOTÓN ELIMINAR CORREGIDO */}
                 <button
                   onClick={() => eliminarDelCarrito(index)}
-                  className="
-                    bg-red-500
-                    hover:bg-red-600
-                    px-4
-                    py-2
-                    rounded-xl
-                    transition
-                  "
+                  className="text-zinc-500 hover:text-red-500 transition-colors p-2"
+                  aria-label="Eliminar producto"
                 >
-                  X
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
                 </button>
-
               </div>
-
             ))}
-
           </div>
 
           {/* TOTAL */}
-          <div className="mt-8 border-t border-gray-800 pt-6">
-
+          <div className="mt-8 border-t border-zinc-800 pt-6">
             <div className="flex justify-between items-center">
-
-              <h3 className="text-2xl font-bold">
-                Total
-              </h3>
-
-              <h3 className="text-4xl font-extrabold text-pink-400">
+              <h3 className="text-xl font-bold text-zinc-400 uppercase tracking-widest">Total</h3>
+              <h3 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">
                 S/ {total.toFixed(2)}
               </h3>
-
             </div>
-
           </div>
         </>
       )}
-
     </div>
   );
 }

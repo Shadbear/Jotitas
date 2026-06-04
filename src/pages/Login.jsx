@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { auth, provider } from "../firebase";
-import { signInWithRedirect, getRedirectResult } from "firebase/auth";
+import { signInWithRedirect, getRedirectResult, signInWithEmailAndPassword } from "firebase/auth";
 
 function Login({ onLogin }) {
   const [modo, setModo] = useState("login");
@@ -10,7 +10,6 @@ function Login({ onLogin }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Capturar resultado de redirección al volver de Google
   useEffect(() => {
     getRedirectResult(auth)
       .then((result) => {
@@ -25,6 +24,20 @@ function Login({ onLogin }) {
       await signInWithRedirect(auth, provider);
     } catch (err) {
       setError("No se pudo conectar con Google");
+      setLoading(false);
+    }
+  };
+
+  // ESTA ES LA FUNCIÓN QUE FALTABA
+  const handleLogin = async () => {
+    if (!email || !password) return setError("Ingresa email y contraseña");
+    setLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      onLogin(); // Esto dispara la redirección a la tienda
+    } catch (err) {
+      setError("Email o contraseña incorrectos");
+    } finally {
       setLoading(false);
     }
   };
@@ -49,11 +62,9 @@ function Login({ onLogin }) {
 
   return (
     <div className="bg-black min-h-screen flex items-center justify-center px-6 relative overflow-hidden font-sans">
-      {/* Fondo decorativo */}
       <div className="absolute w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[150px] -top-20 -right-20 animate-pulse" />
       
       <div className="relative w-full max-w-sm z-10">
-        {/* Header Branding */}
         <div className="text-center mb-8">
           <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 tracking-tighter">
             JOTITAS
@@ -85,7 +96,7 @@ function Login({ onLogin }) {
           {error && <p className="text-red-400 text-[11px] mt-4 text-center font-bold">{error}</p>}
 
           <button
-            onClick={modo === "registro" ? handleRegistro : () => { /* Aquí tu lógica de login normal */ }}
+            onClick={modo === "registro" ? handleRegistro : handleLogin}
             disabled={loading}
             className="w-full mt-6 bg-white text-black py-3.5 rounded-xl font-black text-sm uppercase tracking-wider hover:bg-zinc-200 transition-colors"
           >

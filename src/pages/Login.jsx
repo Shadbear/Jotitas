@@ -98,6 +98,21 @@ function Login({ onLogin }) {
           )}
 
           <button
+            onClick={modo === "registro" ? handleRegistro : handleLoginEmail}
+            disabled={loading}
+            className="w-full mt-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-2xl font-black text-lg transition-all hover:opacity-90 disabled:opacity-50 shadow-[0_0_20px_rgba(168,85,247,0.3)]"
+          >
+            {loading ? "Procesando..." : modo === "registro" ? "CREAR CUENTA" : "ACCEDER"}
+          </button>
+
+          {/* Separador elegante */}
+          <div className="flex items-center gap-4 my-8">
+            <div className="flex-1 h-px bg-zinc-800" />
+            <span className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">o</span>
+            <div className="flex-1 h-px bg-zinc-800" />
+          </div>
+
+          <button
             onClick={handleLoginGoogle}
             disabled={loading}
             className="w-full mt-4 border border-zinc-700 hover:bg-zinc-800 text-white py-3.5 rounded-xl font-bold text-sm uppercase tracking-wider transition-all disabled:opacity-50"

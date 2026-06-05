@@ -22,7 +22,6 @@ function Login({ onLogin }) {
     setError("");
     try {
       await signInWithPopup(auth, provider);
-      // onAuthStateChanged en Home.jsx detecta el login solo
     } catch (err) {
       if (err.code !== "auth/popup-closed-by-user") {
         setError("No se pudo conectar con Google: " + err.message);
@@ -54,26 +53,23 @@ function Login({ onLogin }) {
   };
 
   return (
-    <div className="bg-black min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
+    <div className="bg-black min-h-screen flex items-center justify-center px-6 relative overflow-hidden font-sans">
+      <div className="absolute w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] -top-20 -right-20 animate-pulse" />
+      <div className="absolute w-[500px] h-[500px] bg-cyan-600/5 rounded-full blur-[120px] -bottom-20 -left-20" />
 
-      <div className="absolute w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] -top-20 -right-20 animate-pulse" />
-      <div className="absolute w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-[120px] -bottom-20 -left-20" />
+      <div className="relative w-full max-w-sm z-10">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-black text-white tracking-tighter">JOTITAS</h1>
+        </div>
 
-      <div className="relative w-full max-w-md z-10">
-        <div className="bg-zinc-950/80 backdrop-blur-2xl p-8 rounded-[2rem] border border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] relative">
-
-          <div className="absolute inset-0 rounded-[2rem] border border-purple-500/20 pointer-events-none" />
-
-          {/* Tabs */}
-          <div className="flex bg-black rounded-2xl p-1.5 mb-8 border border-zinc-800">
+        <div className="bg-zinc-900/40 backdrop-blur-xl p-8 rounded-[2rem] border border-zinc-800 shadow-2xl">
+          <div className="flex bg-black rounded-2xl p-1 mb-8 border border-zinc-800">
             {["login", "registro"].map((m) => (
               <button
                 key={m}
                 onClick={() => setModo(m)}
-                className={`flex-1 py-3 rounded-xl font-black text-sm uppercase tracking-widest transition-all ${
-                  modo === m
-                    ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-[0_0_20px_rgba(168,85,247,0.4)]"
-                    : "text-zinc-500 hover:text-zinc-300"
+                className={`flex-1 py-2.5 rounded-xl text-xs font-bold uppercase tracking-[0.1em] transition-all ${
+                  modo === m ? "bg-white text-black shadow-lg" : "text-zinc-600 hover:text-zinc-300"
                 }`}
               >
                 {m === "login" ? "Acceder" : "Unirse"}
@@ -81,8 +77,7 @@ function Login({ onLogin }) {
             ))}
           </div>
 
-          {/* Inputs */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             {modo === "registro" && (
               <Input label="Nombre" value={nombre} onChange={setNombre} />
             )}
@@ -90,31 +85,25 @@ function Login({ onLogin }) {
             <Input label="Contraseña" type="password" value={password} onChange={setPassword} />
           </div>
 
-          {/* Error */}
-          {error && (
-            <p className="text-red-400 text-sm mt-4 text-center">{error}</p>
-          )}
+          {error && <p className="text-red-400 text-[10px] mt-4 text-center font-bold uppercase">{error}</p>}
 
-          {/* Botón registro */}
           {modo === "registro" && (
             <button
               onClick={handleRegistro}
               disabled={loading}
-              className="w-full mt-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-2xl font-black text-lg transition-all hover:opacity-90 disabled:opacity-50"
+              className="w-full mt-6 bg-white text-black py-3.5 rounded-xl font-black text-sm uppercase tracking-wider hover:bg-zinc-200 transition-all disabled:opacity-50"
             >
-              {loading ? "Procesando..." : "CREAR CUENTA"}
+              {loading ? "Procesando..." : "Crear cuenta"}
             </button>
           )}
 
-          {/* Botón Google */}
           <button
             onClick={handleLoginGoogle}
             disabled={loading}
-            className="w-full mt-4 bg-white hover:bg-cyan-400 text-black py-4 rounded-2xl font-black text-lg transition-all disabled:opacity-50"
+            className="w-full mt-4 border border-zinc-700 hover:bg-zinc-800 text-white py-3.5 rounded-xl font-bold text-sm uppercase tracking-wider transition-all disabled:opacity-50"
           >
-            {loading ? "Conectando..." : "INGRESAR CON GOOGLE"}
+            {loading ? "Conectando..." : "Ingresar con Google"}
           </button>
-
         </div>
       </div>
     </div>
@@ -124,14 +113,14 @@ function Login({ onLogin }) {
 function Input({ label, type = "text", value, onChange }) {
   return (
     <div>
-      <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-2 block">
+      <label className="text-[9px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-1.5 block ml-1">
         {label}
       </label>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 text-white focus:border-purple-500 outline-none transition-all focus:ring-2 focus:ring-purple-500/20"
+        className="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-zinc-500 outline-none transition-all"
       />
     </div>
   );

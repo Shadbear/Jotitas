@@ -3,16 +3,33 @@ import { sql } from "@vercel/postgres";
 export default async function handler(req, res) {
 
   // GET - Obtener todos los pedidos
-  if (req.method === "GET") {
-    try {
-      const resultado = await sql`
-        SELECT * FROM pedidos ORDER BY created_at DESC
-      `;
-      return res.status(200).json(resultado.rows);
-    } catch (error) {
-      return res.status(500).json({ error: error.message });
-    }
+  if (req.method === "PATCH") {
+  const { id, accion } = req.body; // accion: "aprobar" o "rechazar"
+  try {
+    const estado = accion === "aprobar" ? "pagado" : "rechazado";
+    
+    const resultado = await sql`
+      UPDATE pedidos SET estado = ${estado} WHERE id = ${id}
+      RETURNING *
+    `;
+    
+    const pedido = resultado.rows[0];
+
+    // Enviar email al usuario
+    await fetch(`${process.env.VERCEL_URL}/api/enviar-email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        tipo: accion === "aprobar" ? "aprobado" : "rechazado",
+        pedido,
+      }),
+    });
+
+    return res.status(200).json({ ok: true });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
+}
 
   // POST - Crear nuevo pedido
   if (req.method === "POST") {

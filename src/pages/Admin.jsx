@@ -18,17 +18,17 @@ function Admin() {
       .then(setProductos);
   }, []);
 
-  const aprobarPedido = async (id) => {
-    const res = await fetch("/api/pedidos", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
-    });
-    if (res.ok) {
-      alert("Pedido aprobado y marcado como PAGADO");
-      setPedidos(pedidos.filter((p) => p.id !== id));
-    }
-  };
+  const aprobarPedido = async (id, accion) => {
+  const res = await fetch("/api/pedidos", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id, accion }),
+  });
+  if (res.ok) {
+    alert(accion === "aprobar" ? "Pedido aprobado ✅" : "Pedido rechazado ❌");
+    setPedidos(pedidos.filter((p) => p.id !== id));
+  }
+};
 
   const actualizarStock = async (id, nombre, precio, stock) => {
     const res = await fetch("/api/productos", {
@@ -100,14 +100,20 @@ function Admin() {
                     <td className="px-4 py-3 text-zinc-400 text-sm">{p.usuario_email}</td>
                     <td className="px-4 py-3 font-mono text-cyan-400">{p.comprobante}</td>
                     <td className="px-4 py-3 font-bold text-green-400">S/ {parseFloat(p.total).toFixed(2)}</td>
-                    <td className="px-4 py-3">
-                      <button
-                        onClick={() => aprobarPedido(p.id)}
-                        className="bg-green-600 px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-green-700 transition-all"
-                      >
-                        Aprobar
-                      </button>
-                    </td>
+                    <td className="px-4 py-3 flex gap-2">
+  <button
+    onClick={() => aprobarPedido(p.id, "aprobar")}
+    className="bg-green-600 px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-green-700 transition-all"
+  >
+    Aprobar
+  </button>
+  <button
+    onClick={() => aprobarPedido(p.id, "rechazar")}
+    className="bg-red-600 px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-red-700 transition-all"
+  >
+    Rechazar
+  </button>
+</td>
                   </tr>
                 ))
               )}

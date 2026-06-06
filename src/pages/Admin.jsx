@@ -6,21 +6,18 @@ function Admin() {
   const [password, setPassword] = useState("");
   const [autenticado, setAutenticado] = useState(false);
 
-  // Cargar pedidos desde API
   useEffect(() => {
     fetch("/api/pedidos")
       .then((res) => res.json())
       .then((data) => setPedidos(data));
   }, []);
 
-  // Cargar productos desde API
   useEffect(() => {
     fetch("/api/productos")
       .then((res) => res.json())
       .then(setProductos);
   }, []);
 
-  // Aprobar pedido
   const aprobarPedido = async (id) => {
     const res = await fetch("/api/pedidos", {
       method: "PATCH",
@@ -33,29 +30,32 @@ function Admin() {
     }
   };
 
-  // Actualizar producto
   const actualizarStock = async (id, nombre, precio, stock) => {
-    await fetch("/api/productos", {
+    const res = await fetch("/api/productos", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, nombre, precio, stock }),
     });
-    alert("Producto actualizado");
+    if (res.ok) {
+      alert("Producto actualizado");
+    } else {
+      alert("Error al actualizar");
+    }
   };
 
-  // Pantalla de login admin
   if (!autenticado) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-black">
+        <h1 className="text-3xl font-black text-white mb-8 tracking-tighter">JOTITAS ADMIN</h1>
         <input
           type="password"
           placeholder="Contraseña"
           onChange={(e) => setPassword(e.target.value)}
-          className="p-2 mb-4 text-black rounded-lg"
+          className="p-3 mb-4 text-black rounded-xl w-64 outline-none"
         />
         <button
           onClick={() => password === "Jotitas2026" && setAutenticado(true)}
-          className="bg-purple-600 px-6 py-2 rounded-lg font-bold text-white hover:bg-purple-700"
+          className="bg-purple-600 px-8 py-3 rounded-xl font-bold text-white hover:bg-purple-700 transition-all"
         >
           Entrar
         </button>
@@ -65,74 +65,123 @@ function Admin() {
 
   return (
     <div className="p-8 bg-black min-h-screen text-white">
-      <h1 className="text-4xl font-black mb-8">Centro de Control Jotitas</h1>
+      <h1 className="text-4xl font-black mb-8 tracking-tighter">Centro de Control Jotitas</h1>
 
       {/* Sección Pedidos */}
       <section className="bg-zinc-900 p-6 rounded-2xl border border-purple-500/30 mb-8">
-        <h2 className="text-2xl font-bold mb-4">Pedidos Pendientes</h2>
-        <table className="w-full text-left">
-          <thead>
-            <tr className="text-purple-400 border-b border-zinc-700">
-              <th className="p-3">Cliente</th>
-              <th className="p-3">Nro Operación</th>
-              <th className="p-3">Total</th>
-              <th className="p-3">Acción</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pedidos.map((p) => (
-              <tr key={p.id} className="border-b border-zinc-800">
-                <td className="p-3">{p.nombre}</td>
-                <td className="p-3 font-mono text-cyan-400">{p.comprobante}</td>
-                <td className="p-3">S/ {p.total}</td>
-                <td className="p-3">
-                  <button
-                    onClick={() => aprobarPedido(p.id)}
-                    className="bg-green-600 px-4 py-1 rounded-lg font-bold hover:bg-green-700"
-                  >
-                    Aprobar
-                  </button>
-                </td>
+        <h2 className="text-2xl font-bold mb-6 text-purple-400">Pedidos Pendientes</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-zinc-800">
+                <th className="px-4 py-3 text-xs font-bold text-purple-400 uppercase tracking-wider rounded-tl-xl">Cliente</th>
+                <th className="px-4 py-3 text-xs font-bold text-purple-400 uppercase tracking-wider">Email</th>
+                <th className="px-4 py-3 text-xs font-bold text-purple-400 uppercase tracking-wider">Nro Operación</th>
+                <th className="px-4 py-3 text-xs font-bold text-purple-400 uppercase tracking-wider">Total</th>
+                <th className="px-4 py-3 text-xs font-bold text-purple-400 uppercase tracking-wider rounded-tr-xl">Acción</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {pedidos.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="text-center py-10 text-zinc-500">
+                    No hay pedidos pendientes
+                  </td>
+                </tr>
+              ) : (
+                pedidos.map((p, i) => (
+                  <tr
+                    key={p.id}
+                    className={`border-b border-zinc-800 transition-colors hover:bg-zinc-800/50 ${
+                      i % 2 === 0 ? "bg-zinc-900" : "bg-zinc-900/50"
+                    }`}
+                  >
+                    <td className="px-4 py-3 font-medium">{p.nombre}</td>
+                    <td className="px-4 py-3 text-zinc-400 text-sm">{p.usuario_email}</td>
+                    <td className="px-4 py-3 font-mono text-cyan-400">{p.comprobante}</td>
+                    <td className="px-4 py-3 font-bold text-green-400">S/ {parseFloat(p.total).toFixed(2)}</td>
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => aprobarPedido(p.id)}
+                        className="bg-green-600 px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-green-700 transition-all"
+                      >
+                        Aprobar
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       {/* Sección Stock */}
       <section className="bg-zinc-900 p-6 rounded-2xl border border-purple-500/30">
-        <h2 className="text-2xl font-bold mb-4">Gestión de Stock</h2>
-        <div className="grid gap-4">
-          {productos.map((prod) => (
-            <div
-              key={prod.id}
-              className="flex gap-4 items-center bg-black p-4 rounded-xl border border-zinc-800"
-            >
-              <input
-                className="bg-transparent border-b border-zinc-600 w-full text-white"
-                defaultValue={prod.nombre}
-                onBlur={(e) => (prod.nombre = e.target.value)}
-              />
-              <input
-                className="bg-transparent border-b border-zinc-600 w-20 text-white"
-                type="number"
-                defaultValue={prod.precio}
-                onChange={(e) => (prod.precio = e.target.value)}
-              />
-              <input
-                className="bg-transparent border-b border-zinc-600 w-20 text-white"
-                type="number"
-                defaultValue={prod.stock}
-                onChange={(e) => (prod.stock = e.target.value)}
-              />
-              <button
-                onClick={() => actualizarStock(prod.id, prod.nombre, prod.precio, prod.stock)}
-                className="bg-purple-600 px-4 py-2 rounded-lg font-bold hover:bg-purple-700"
-              >
-                Guardar
-              </button>
-            </div>
-          ))}
+        <h2 className="text-2xl font-bold mb-6 text-purple-400">Gestión de Stock</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-zinc-800">
+                <th className="px-4 py-3 text-xs font-bold text-purple-400 uppercase tracking-wider rounded-tl-xl">#</th>
+                <th className="px-4 py-3 text-xs font-bold text-purple-400 uppercase tracking-wider">Nombre del Producto</th>
+                <th className="px-4 py-3 text-xs font-bold text-purple-400 uppercase tracking-wider">Precio (S/)</th>
+                <th className="px-4 py-3 text-xs font-bold text-purple-400 uppercase tracking-wider">Stock</th>
+                <th className="px-4 py-3 text-xs font-bold text-purple-400 uppercase tracking-wider rounded-tr-xl">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {productos.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="text-center py-10 text-zinc-500">
+                    No hay productos cargados
+                  </td>
+                </tr>
+              ) : (
+                productos.map((prod, i) => (
+                  <tr
+                    key={prod.id}
+                    className={`border-b border-zinc-800 hover:bg-zinc-800/50 transition-colors ${
+                      i % 2 === 0 ? "bg-zinc-900" : "bg-zinc-900/50"
+                    }`}
+                  >
+                    <td className="px-4 py-3 text-zinc-500 text-sm">{i + 1}</td>
+                    <td className="px-4 py-3">
+                      <input
+                        className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-1.5 text-white text-sm w-full focus:border-purple-500 outline-none transition-all"
+                        defaultValue={prod.nombre}
+                        onBlur={(e) => (prod.nombre = e.target.value)}
+                      />
+                    </td>
+                    <td className="px-4 py-3">
+                      <input
+                        className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-1.5 text-white text-sm w-24 focus:border-purple-500 outline-none transition-all"
+                        type="number"
+                        defaultValue={prod.precio}
+                        onChange={(e) => (prod.precio = e.target.value)}
+                      />
+                    </td>
+                    <td className="px-4 py-3">
+                      <input
+                        className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-1.5 text-white text-sm w-20 focus:border-purple-500 outline-none transition-all"
+                        type="number"
+                        defaultValue={prod.stock}
+                        onChange={(e) => (prod.stock = e.target.value)}
+                      />
+                    </td>
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => actualizarStock(prod.id, prod.nombre, prod.precio, prod.stock)}
+                        className="bg-purple-600 px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-purple-700 transition-all"
+                      >
+                        Guardar
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </section>
 

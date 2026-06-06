@@ -39,12 +39,13 @@ function Login({ onLogin }) {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err) {
       const errores = {
-        "auth/user-not-found": "No existe una cuenta con ese email",
-        "auth/wrong-password": "Contraseña incorrecta",
-        "auth/invalid-email": "El email no es válido",
-        "auth/invalid-credential": "Email o contraseña incorrectos",
-        "auth/network-request-failed": "Error de conexión, intenta de nuevo",
-      };
+  "auth/user-not-found": "No existe una cuenta con ese email",
+  "auth/wrong-password": "Contraseña incorrecta",
+  "auth/invalid-email": "El email no es válido",
+  "auth/invalid-credential": "Email o contraseña incorrectos",
+  "auth/too-many-requests": "Demasiados intentos. Espera unos minutos e intenta de nuevo", // ← agrega esto
+  "auth/network-request-failed": "Error de conexión, intenta de nuevo",
+};
       setError(errores[err.code] || "Error al acceder: " + err.message);
     } finally {
       setLoading(false);

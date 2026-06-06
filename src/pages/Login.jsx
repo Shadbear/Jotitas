@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { auth, provider } from "../firebase";
 import { signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 
 function Login({ onLogin }) {
   const [modo, setModo] = useState("login");
@@ -9,6 +10,22 @@ function Login({ onLogin }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const handleRegistro = async () => {
+  if (!email || !password) return setError("Completa los campos");
+  setLoading(true);
+  setError("");
+  try {
+    // Esto crea el usuario directamente en Firebase
+    await createUserWithEmailAndPassword(auth, email, password);
+    setModo("login");
+    alert("¡Cuenta creada con éxito! Ahora puedes acceder.");
+  } catch (err) {
+    setError("Error al crear cuenta: " + err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const limpiar = () => {
     setNombre("");

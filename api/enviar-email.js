@@ -1,6 +1,12 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
-const resend = new Resend("re_Hn82WzK1_NbqtqxAYrTq5nBU5QWo1ZxAg");
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS,
+  },
+});
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Método no permitido" });
@@ -9,10 +15,9 @@ export default async function handler(req, res) {
 
   try {
     if (tipo === "nuevo_pedido") {
-      // Email al admin
-      await resend.emails.send({
-        from: "Jotitas <onboarding@resend.dev>",
-        to: "jeampierocm@gmail.com", // tu email de admin
+      await transporter.sendMail({
+        from: `"Jotitas 🛍️" <${process.env.GMAIL_USER}>`,
+        to: process.env.GMAIL_USER,
         subject: `🛍️ Nuevo pedido de ${pedido.nombre}`,
         html: `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
@@ -23,9 +28,9 @@ export default async function handler(req, res) {
             <p><strong>Nro Operación Yape:</strong> ${pedido.comprobante}</p>
             <p><strong>Productos:</strong></p>
             <ul>
-            ${(Array.isArray(pedido.productos) ? pedido.productos : JSON.parse(pedido.productos || "[]")).map(p => 
-  `<li>${p.nombre} x${p.cantidad} — S/ ${p.precio}</li>`
-).join("")}
+              ${(Array.isArray(pedido.productos) ? pedido.productos : JSON.parse(pedido.productos || "[]"))
+                .map(p => `<li>${p.nombre} x${p.cantidad} — S/ ${p.precio}</li>`)
+                .join("")}
             </ul>
             <p>Ingresa al panel admin para aprobar o rechazar.</p>
           </div>
@@ -34,8 +39,8 @@ export default async function handler(req, res) {
     }
 
     if (tipo === "aprobado") {
-      await resend.emails.send({
-        from: "Jotitas <onboarding@resend.dev>",
+      await transporter.sendMail({
+        from: `"Jotitas 🛍️" <${process.env.GMAIL_USER}>`,
         to: pedido.usuario_email,
         subject: "✅ Tu pedido fue aprobado — Jotitas",
         html: `
@@ -51,8 +56,8 @@ export default async function handler(req, res) {
     }
 
     if (tipo === "rechazado") {
-      await resend.emails.send({
-        from: "Jotitas <onboarding@resend.dev>",
+      await transporter.sendMail({
+        from: `"Jotitas 🛍️" <${process.env.GMAIL_USER}>`,
         to: pedido.usuario_email,
         subject: "❌ Tu pedido fue rechazado — Jotitas",
         html: `

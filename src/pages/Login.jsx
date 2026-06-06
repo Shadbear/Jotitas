@@ -42,6 +42,7 @@ function Login({ onLogin }) {
         "auth/user-not-found": "No existe una cuenta con ese email",
         "auth/wrong-password": "Contraseña incorrecta",
         "auth/invalid-email": "El email no es válido",
+        "auth/invalid-credential": "Email o contraseña incorrectos",
         "auth/network-request-failed": "Error de conexión, intenta de nuevo",
       };
       setError(errores[err.code] || "Error al acceder: " + err.message);
@@ -54,7 +55,6 @@ function Login({ onLogin }) {
     if (!nombre || !email || !password) return setError("Completa todos los campos");
     if (password.length < 6) return setError("La contraseña debe tener mínimo 6 caracteres");
     if (!email.includes("@")) return setError("Ingresa un email válido");
-
     setLoading(true);
     setError("");
     try {
@@ -87,7 +87,7 @@ function Login({ onLogin }) {
         </div>
 
         <div className="bg-zinc-900/40 backdrop-blur-xl p-8 rounded-[2rem] border border-zinc-800 shadow-2xl">
-          
+
           {/* Tabs */}
           <div className="flex bg-black rounded-2xl p-1 mb-8 border border-zinc-800">
             {["login", "registro"].map((m) => (

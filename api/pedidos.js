@@ -3,16 +3,16 @@ import { sql } from "@vercel/postgres";
 export default async function handler(req, res) {
 
   // GET - Obtener todos los pedidos
-  if (req.method === "GET") {
-    try {
-      const resultado = await sql`
-        SELECT * FROM pedidos ORDER BY created_at DESC
-      `;
-      return res.status(200).json(resultado.rows);
-    } catch (error) {
-      return res.status(500).json({ error: error.message });
-    }
+if (req.method === "GET") {
+  try {
+    const resultado = await sql`
+      SELECT * FROM pedidos WHERE estado = 'pendiente' ORDER BY created_at DESC
+    `;
+    return res.status(200).json(resultado.rows);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
+}
 
   // POST - Crear nuevo pedido
   if (req.method === "POST") {

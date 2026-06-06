@@ -9,26 +9,26 @@ function Admin() {
   useEffect(() => {
     fetch("/api/pedidos")
       .then((res) => res.json())
-      .then((data) => setPedidos(data));
+      .then((data) => setPedidos(Array.isArray(data) ? data : []));
   }, []);
 
   useEffect(() => {
     fetch("/api/productos")
       .then((res) => res.json())
-      .then(setProductos);
+      .then((data) => setProductos(Array.isArray(data) ? data : []));
   }, []);
 
   const aprobarPedido = async (id, accion) => {
-  const res = await fetch("/api/pedidos", {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id, accion }),
-  });
-  if (res.ok) {
-    alert(accion === "aprobar" ? "Pedido aprobado ✅" : "Pedido rechazado ❌");
-    setPedidos(pedidos.filter((p) => p.id !== id));
-  }
-};
+    const res = await fetch("/api/pedidos", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, accion }),
+    });
+    if (res.ok) {
+      alert(accion === "aprobar" ? "Pedido aprobado ✅" : "Pedido rechazado ❌");
+      setPedidos(pedidos.filter((p) => p.id !== id));
+    }
+  };
 
   const actualizarStock = async (id, nombre, precio, stock) => {
     const res = await fetch("/api/productos", {
@@ -100,20 +100,22 @@ function Admin() {
                     <td className="px-4 py-3 text-zinc-400 text-sm">{p.usuario_email}</td>
                     <td className="px-4 py-3 font-mono text-cyan-400">{p.comprobante}</td>
                     <td className="px-4 py-3 font-bold text-green-400">S/ {parseFloat(p.total).toFixed(2)}</td>
-                    <td className="px-4 py-3 flex gap-2">
-  <button
-    onClick={() => aprobarPedido(p.id, "aprobar")}
-    className="bg-green-600 px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-green-700 transition-all"
-  >
-    Aprobar
-  </button>
-  <button
-    onClick={() => aprobarPedido(p.id, "rechazar")}
-    className="bg-red-600 px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-red-700 transition-all"
-  >
-    Rechazar
-  </button>
-</td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => aprobarPedido(p.id, "aprobar")}
+                          className="bg-green-600 px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-green-700 transition-all"
+                        >
+                          Aprobar
+                        </button>
+                        <button
+                          onClick={() => aprobarPedido(p.id, "rechazar")}
+                          className="bg-red-600 px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-red-700 transition-all"
+                        >
+                          Rechazar
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))
               )}

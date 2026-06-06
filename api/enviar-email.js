@@ -3,8 +3,8 @@ import nodemailer from "nodemailer";
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS,
+    user: "jeampierocm@gmail.com",
+    pass: "hquj rila cpwp grse",
   },
 });
 
@@ -16,8 +16,8 @@ export default async function handler(req, res) {
   try {
     if (tipo === "nuevo_pedido") {
       await transporter.sendMail({
-        from: `"Jotitas 🛍️" <${process.env.GMAIL_USER}>`,
-        to: process.env.GMAIL_USER,
+        from: '"Jotitas 🛍️" <jeampierocm@gmail.com>',
+        to: "jeampierocm@gmail.com",
         subject: `🛍️ Nuevo pedido de ${pedido.nombre}`,
         html: `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
@@ -40,7 +40,7 @@ export default async function handler(req, res) {
 
     if (tipo === "aprobado") {
       await transporter.sendMail({
-        from: `"Jotitas 🛍️" <${process.env.GMAIL_USER}>`,
+        from: '"Jotitas 🛍️" <jeampierocm@gmail.com>',
         to: pedido.usuario_email,
         subject: "✅ Tu pedido fue aprobado — Jotitas",
         html: `
@@ -57,7 +57,7 @@ export default async function handler(req, res) {
 
     if (tipo === "rechazado") {
       await transporter.sendMail({
-        from: `"Jotitas 🛍️" <${process.env.GMAIL_USER}>`,
+        from: '"Jotitas 🛍️" <jeampierocm@gmail.com>',
         to: pedido.usuario_email,
         subject: "❌ Tu pedido fue rechazado — Jotitas",
         html: `

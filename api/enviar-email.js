@@ -23,9 +23,9 @@ export default async function handler(req, res) {
             <p><strong>Nro Operación Yape:</strong> ${pedido.comprobante}</p>
             <p><strong>Productos:</strong></p>
             <ul>
-              ${JSON.parse(pedido.productos || "[]").map(p => 
-                `<li>${p.nombre} x${p.cantidad} — S/ ${p.precio}</li>`
-              ).join("")}
+            ${(Array.isArray(pedido.productos) ? pedido.productos : JSON.parse(pedido.productos || "[]")).map(p => 
+  `<li>${p.nombre} x${p.cantidad} — S/ ${p.precio}</li>`
+).join("")}
             </ul>
             <p>Ingresa al panel admin para aprobar o rechazar.</p>
           </div>

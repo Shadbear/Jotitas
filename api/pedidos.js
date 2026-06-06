@@ -29,7 +29,7 @@ export default async function handler(req, res) {
       `;
 
       // Email al admin avisando nuevo pedido
-      await fetch(`${process.env.VERCEL_URL}/api/enviar-email`, {
+      await fetch("https://jotitas-qlhv.vercel.app/api/enviar-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

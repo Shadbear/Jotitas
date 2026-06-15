@@ -1,54 +1,5 @@
 import { useState } from "react";
 
-const RESPUESTAS = {
-  envio: {
-    palabras: ["envío", "envio", "entrega", "delivery", "llega", "demora", "tiempo", "días", "dias"],
-    respuesta: "📦 Realizamos envíos a todo el Perú. El tiempo de entrega es de 3 a 5 días hábiles para Lima y de 5 a 10 días para provincias. Nos comunicamos contigo por WhatsApp para coordinar la entrega.",
-  },
-  pago: {
-    palabras: ["pago", "pagar", "yape", "precio", "costo", "transferencia", "efectivo"],
-    respuesta: "💜 Aceptamos pagos por Yape al número 921 629 315. Debes ingresar el número de operación en el formulario de pago para confirmar tu pedido.",
-  },
-  tallas: {
-    palabras: ["talla", "tallas", "medida", "medidas", "tamaño", "s", "m", "l", "xl", "xxl", "talle"],
-    respuesta: "📏 Manejamos tallas S, M, L, XL y XXL. Si tienes dudas sobre tu talla, escríbenos por WhatsApp y te ayudamos a elegir la correcta.",
-  },
-  pedido: {
-    palabras: ["pedido", "orden", "compra", "estado", "aprobado", "rechazado", "verificar", "confirmar"],
-        respuesta: "🛍️ Una vez realizado tu pedido, lo revisamos y te enviamos un email confirmando si fue aprobado o rechazado. Este proceso toma entre 1 y 24 horas hábiles.",
-  },
-  devolucion: {
-    palabras: ["devolución", "devolucion", "cambio", "cambiar", "devolver", "garantía", "garantia"],
-    respuesta: "🔄 Aceptamos cambios dentro de los 7 días de recibido el producto, siempre que esté en perfecto estado y con etiquetas. Contáctanos por WhatsApp para coordinar.",
-  },
-  contacto: {
-    palabras: ["contacto", "contactar", "whatsapp", "teléfono", "telefono", "llamar", "escribir", "comunicar"],
-    respuesta: "📱 Puedes contactarnos por WhatsApp al 921 629 315. Estamos disponibles de lunes a sábado de 9am a 8pm.",
-  },
-  productos: {
-    palabras: ["producto", "productos", "ropa", "polo", "polera", "casaca", "pantalón", "pantalon", "zapatilla", "accesorio"],
-    respuesta: "👕 Tenemos polos, poleras, pantalones, casacas, zapatillas y accesorios. Puedes filtrar por categoría en la tienda para encontrar lo que buscas.",
-  },
-  saludo: {
-    palabras: ["hola", "buenas", "buenos", "hi", "hello", "saludos", "hey", "buen día", "buen dia"],
-    respuesta: "👋 ¡Hola! Soy el asistente de Jotitas. Puedo ayudarte con información sobre envíos, tallas, pagos, pedidos y más. ¿En qué te puedo ayudar?",
-  },
-  gracias: {
-    palabras: ["gracias", "thanks", "perfecto", "genial", "ok", "okey", "listo", "entendido"],
-    respuesta: "😊 ¡Con gusto! Si tienes más preguntas, aquí estoy. También puedes escribirnos por WhatsApp al 921 629 315.",
-  },
-};
-
-const buscarRespuesta = (mensaje) => {
-  const texto = mensaje.toLowerCase().trim();
-  for (const categoria of Object.values(RESPUESTAS)) {
-    if (categoria.palabras.some((palabra) => texto.includes(palabra))) {
-      return categoria.respuesta;
-    }
-  }
-  return "🤔 No entendí bien tu pregunta. Puedo ayudarte con:\n• Envíos y entregas\n• Tallas y medidas\n• Métodos de pago\n• Estado de pedidos\n• Devoluciones y cambios\n• Contacto\n\n¿Sobre cuál de estos temas tienes dudas?";
-};
-
 function BotAyuda() {
   const [abierto, setAbierto] = useState(false);
   const [mensajes, setMensajes] = useState([
@@ -58,15 +9,32 @@ function BotAyuda() {
     },
   ]);
   const [input, setInput] = useState("");
+  const [escribiendo, setEscribiendo] = useState(false);
 
-  const enviarMensaje = () => {
-    if (!input.trim()) return;
+  const enviarMensaje = async () => {
+    if (!input.trim() || escribiendo) return;
 
-    const nuevoMensaje = { tipo: "usuario", texto: input };
-    const respuesta = { tipo: "bot", texto: buscarRespuesta(input) };
-
-    setMensajes((prev) => [...prev, nuevoMensaje, respuesta]);
+    const texto = input;
+    setMensajes((prev) => [...prev, { tipo: "usuario", texto }]);
     setInput("");
+    setEscribiendo(true);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mensaje: texto }),
+      });
+      const data = await res.json();
+      setMensajes((prev) => [...prev, { tipo: "bot", texto: data.respuesta }]);
+    } catch {
+      setMensajes((prev) => [
+        ...prev,
+        { tipo: "bot", texto: "❌ Error al conectar. Intenta de nuevo." },
+      ]);
+    } finally {
+      setEscribiendo(false);
+    }
   };
 
   const handleKeyDown = (e) => {
@@ -75,7 +43,7 @@ function BotAyuda() {
 
   return (
     <>
-      {/* Botón flotante del bot */}
+      {/* Botón flotante */}
       <button
         onClick={() => setAbierto(!abierto)}
         className="fixed bottom-24 right-6 z-50 bg-purple-600 hover:bg-purple-500 text-white p-4 rounded-full shadow-[0_0_20px_rgba(168,85,247,0.5)] hover:shadow-[0_0_30px_rgba(168,85,247,0.8)] transition-all hover:scale-110"
@@ -103,7 +71,7 @@ function BotAyuda() {
             </div>
             <div>
               <p className="text-white font-black text-sm">Asistente Jotitas</p>
-              <p className="text-purple-200 text-xs">Siempre disponible</p>
+              <p className="text-purple-200 text-xs">Con IA — Siempre disponible</p>
             </div>
           </div>
 
@@ -125,6 +93,13 @@ function BotAyuda() {
                 </div>
               </div>
             ))}
+            {escribiendo && (
+              <div className="flex justify-start">
+                <div className="bg-zinc-800 text-zinc-400 px-4 py-2 rounded-2xl rounded-bl-sm text-sm">
+                  Escribiendo...
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Input */}
@@ -139,7 +114,8 @@ function BotAyuda() {
             />
             <button
               onClick={enviarMensaje}
-              className="bg-purple-600 hover:bg-purple-500 text-white p-2 rounded-xl transition-all"
+              disabled={escribiendo}
+              className="bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white p-2 rounded-xl transition-all"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>

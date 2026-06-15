@@ -8,6 +8,7 @@ import PaymentMethod from "../components/PaymentMethod";
 import Login from "./Login";
 import Hero from "../components/Hero";
 import BotAyuda from "../components/BotAyuda";
+import Footer from "../components/Footer";
 
 const WhatsAppButton = () => (
   <a
@@ -267,7 +268,7 @@ function Home() {
         />
       </section>
 
-      {/* Botón WhatsApp */}
+      <Footer />
       <WhatsAppButton />
       <BotAyuda />
 

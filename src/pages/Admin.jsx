@@ -76,6 +76,8 @@ function Admin() {
               <tr className="bg-zinc-800">
                 <th className="px-4 py-3 text-xs font-bold text-purple-400 uppercase tracking-wider rounded-tl-xl">Cliente</th>
                 <th className="px-4 py-3 text-xs font-bold text-purple-400 uppercase tracking-wider">Email</th>
+                <th className="px-4 py-3 text-xs font-bold text-purple-400 uppercase tracking-wider">Dirección</th>
+                <th className="px-4 py-3 text-xs font-bold text-purple-400 uppercase tracking-wider">Teléfono</th>
                 <th className="px-4 py-3 text-xs font-bold text-purple-400 uppercase tracking-wider">Nro Operación</th>
                 <th className="px-4 py-3 text-xs font-bold text-purple-400 uppercase tracking-wider">Total</th>
                 <th className="px-4 py-3 text-xs font-bold text-purple-400 uppercase tracking-wider rounded-tr-xl">Acción</th>
@@ -84,7 +86,7 @@ function Admin() {
             <tbody>
               {pedidos.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="text-center py-10 text-zinc-500">
+                  <td colSpan={7} className="text-center py-10 text-zinc-500">
                     No hay pedidos pendientes
                   </td>
                 </tr>
@@ -98,6 +100,8 @@ function Admin() {
                   >
                     <td className="px-4 py-3 font-medium">{p.nombre}</td>
                     <td className="px-4 py-3 text-zinc-400 text-sm">{p.usuario_email}</td>
+                    <td className="px-4 py-3 text-zinc-400 text-sm">{p.direccion || "—"}</td>
+                    <td className="px-4 py-3 text-zinc-400 text-sm">{p.telefono || "—"}</td>
                     <td className="px-4 py-3 font-mono text-cyan-400">{p.comprobante}</td>
                     <td className="px-4 py-3 font-bold text-green-400">S/ {parseFloat(p.total).toFixed(2)}</td>
                     <td className="px-4 py-3">

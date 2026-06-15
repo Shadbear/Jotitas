@@ -145,42 +145,42 @@ function Home() {
     return coincideCategoria && coincideBusqueda;
   });
 
-  const manejarConfirmacionPedido = async (numeroOperacion) => {
-    if (!numeroOperacion) {
-      alert("Por favor, ingresa tu número de operación de Yape");
-      return;
-    }
-    if (carrito.length === 0) {
-      alert("Tu carrito está vacío.");
-      return;
-    }
-    try {
-      setEnviando(true);
-      const response = await fetch("/api/pedidos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          usuario_email: usuario.email,
-          nombre: usuario.displayName,
-          telefono: "999999999",
-          direccion: "Tu dirección aquí",
-          productos: carrito,
-          total: total,
-          metodo_pago: "YAPE",
-          comprobante: numeroOperacion,
-          estado: "pendiente",
-        }),
-      });
-      if (!response.ok) throw new Error("Error al guardar en la base de datos");
-      alert("¡Pedido realizado con éxito! Estamos verificando tu pago.");
-      vaciarCarrito();
-    } catch (error) {
-      console.error("Error completo:", error);
-      alert("Hubo un error al procesar el pedido.");
-    } finally {
-      setEnviando(false);
-    }
-  };
+const manejarConfirmacionPedido = async (numeroOperacion, direccion, telefono) => {
+  if (!numeroOperacion) {
+    alert("Por favor, ingresa tu número de operación de Yape");
+    return;
+  }
+  if (carrito.length === 0) {
+    alert("Tu carrito está vacío.");
+    return;
+  }
+  try {
+    setEnviando(true);
+    const response = await fetch("/api/pedidos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        usuario_email: usuario.email,
+        nombre: usuario.displayName,
+        telefono: telefono,        // ← ahora viene del formulario
+        direccion: direccion,      // ← ahora viene del formulario
+        productos: carrito,
+        total: total,
+        metodo_pago: "YAPE",
+        comprobante: numeroOperacion,
+        estado: "pendiente",
+      }),
+    });
+    if (!response.ok) throw new Error("Error al guardar en la base de datos");
+    alert("¡Pedido realizado con éxito! Estamos verificando tu pago.");
+    vaciarCarrito();
+  } catch (error) {
+    console.error("Error completo:", error);
+    alert("Hubo un error al procesar el pedido.");
+  } finally {
+    setEnviando(false);
+  }
+};
 
   if (!logueado) {
     return <Login onLogin={() => {}} />;

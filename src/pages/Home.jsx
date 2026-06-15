@@ -7,6 +7,7 @@ import Cart from "../components/Cart";
 import PaymentMethod from "../components/PaymentMethod";
 import Login from "./Login";
 import Hero from "../components/Hero";
+import BotAyuda from "../components/BotAyuda";
 
 const WhatsAppButton = () => (
   <a
@@ -268,6 +269,7 @@ function Home() {
 
       {/* Botón WhatsApp */}
       <WhatsAppButton />
+      <BotAyuda />
 
       {/* Modal Login */}
       {mostrarLogin && (

@@ -2,6 +2,8 @@ import { useState } from "react";
 
 function PaymentMethod({ carrito, onConfirmarPedido }) {
   const [numeroOperacion, setNumeroOperacion] = useState("");
+  const [direccion, setDireccion] = useState("");
+  const [telefono, setTelefono] = useState("");
   const [enviando, setEnviando] = useState(false);
 
   const total = carrito.reduce(
@@ -10,19 +12,26 @@ function PaymentMethod({ carrito, onConfirmarPedido }) {
   );
 
   const handleConfirmar = async () => {
+    if (!direccion.trim()) {
+      alert("Por favor, ingresa tu dirección de entrega.");
+      return;
+    }
+    if (telefono.length < 9) {
+      alert("Por favor, ingresa un número de teléfono válido.");
+      return;
+    }
     if (numeroOperacion.length < 4) {
       alert("Por favor, ingresa un número de operación válido.");
       return;
     }
     setEnviando(true);
-    // Llamamos a la función que viene de App.jsx pasando el número
-    await onConfirmarPedido(numeroOperacion);
+    await onConfirmarPedido(numeroOperacion, direccion, telefono);
     setEnviando(false);
   };
 
   return (
     <div className="bg-zinc-900/50 p-8 rounded-3xl border border-purple-500/30 backdrop-blur-md shadow-[0_0_20px_rgba(168,85,247,0.1)]">
-      
+
       {/* Título */}
       <h2 className="text-3xl font-black text-white mb-6 flex items-center gap-3">
         <span className="text-4xl">💜</span> PAGO POR YAPE
@@ -49,32 +58,64 @@ function PaymentMethod({ carrito, onConfirmarPedido }) {
         </h3>
       </div>
 
-      {/* Input Número de Operación */}
+      {/* Datos de entrega y pago */}
       <div className="space-y-4">
-        <label className="block text-sm font-bold text-gray-400 uppercase tracking-wider">
-          Número de operación (Yape)
-        </label>
 
-        <input
-          type="text"
-          placeholder="Ingresa los dígitos de tu operación"
-          value={numeroOperacion}
-          onChange={(e) => setNumeroOperacion(e.target.value)}
-          className="w-full bg-black border border-purple-500/30 rounded-xl p-4 text-white placeholder-zinc-600 focus:border-purple-500 outline-none transition-all"
-        />
+        {/* Dirección */}
+        <div>
+          <label className="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">
+            Dirección de entrega
+          </label>
+          <input
+            type="text"
+            placeholder="Ej: Jr. Lima 123, Pisco, Ica"
+            value={direccion}
+            onChange={(e) => setDireccion(e.target.value)}
+            className="w-full bg-black border border-purple-500/30 rounded-xl p-4 text-white placeholder-zinc-600 focus:border-purple-500 outline-none transition-all"
+          />
+        </div>
+
+        {/* Teléfono */}
+        <div>
+          <label className="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">
+            Teléfono de contacto
+          </label>
+          <input
+            type="tel"
+            placeholder="Ej: 987654321"
+            value={telefono}
+            onChange={(e) => setTelefono(e.target.value)}
+            className="w-full bg-black border border-purple-500/30 rounded-xl p-4 text-white placeholder-zinc-600 focus:border-purple-500 outline-none transition-all"
+          />
+        </div>
+
+        {/* Número de operación */}
+        <div>
+          <label className="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">
+            Número de operación (Yape)
+          </label>
+          <input
+            type="text"
+            placeholder="Ingresa los dígitos de tu operación"
+            value={numeroOperacion}
+            onChange={(e) => setNumeroOperacion(e.target.value)}
+            className="w-full bg-black border border-purple-500/30 rounded-xl p-4 text-white placeholder-zinc-600 focus:border-purple-500 outline-none transition-all"
+          />
+        </div>
 
         {/* Botón enviar */}
         <button
-          disabled={numeroOperacion.length < 4 || enviando}
+          disabled={!direccion.trim() || telefono.length < 9 || numeroOperacion.length < 4 || enviando}
           onClick={handleConfirmar}
           className={`w-full py-4 rounded-xl font-black text-white transition-all ${
-            numeroOperacion.length < 4 || enviando
+            !direccion.trim() || telefono.length < 9 || numeroOperacion.length < 4 || enviando
               ? "bg-zinc-800 cursor-not-allowed opacity-50"
               : "bg-purple-600 hover:bg-purple-700"
           }`}
         >
           {enviando ? "Procesando..." : "ENVIAR PEDIDO YAPE"}
         </button>
+
       </div>
     </div>
   );

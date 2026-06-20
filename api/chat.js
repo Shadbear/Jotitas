@@ -22,7 +22,7 @@ export default async function handler(req, res) {
           - Tallas: S, M, L, XL, XXL
           - Devoluciones: 7 días con etiquetas
           - Contacto WhatsApp: 921 629 315
-          - Horario: lunes a sábado 9am-8pm
+          - Horario: lunes a sábado 9am-6pm
           - Categorías: Polos, Poleras, Pantalones, Casacas, Zapatillas, Accesorios`
         },
         {

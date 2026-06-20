@@ -165,7 +165,6 @@ function Home() {
           usuario_email: usuario.email,
           nombre: usuario.displayName,
           telefono: telefono,
-          direccion: direccion,
           productos: carrito,
           total: total,
           metodo_pago: "YAPE",

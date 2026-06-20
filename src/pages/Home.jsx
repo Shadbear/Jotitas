@@ -37,6 +37,17 @@ function Home() {
   const [busqueda, setBusqueda] = useState("");
   const [mostrarLogin, setMostrarLogin] = useState(false);
 
+  // Agrega este estado en Home.jsx
+const [modoOscuro, setModoOscuro] = useState(
+  localStorage.getItem("modo") !== "claro"
+);
+
+const toggleModo = () => {
+  const nuevo = !modoOscuro;
+  setModoOscuro(nuevo);
+  localStorage.setItem("modo", nuevo ? "oscuro" : "claro");
+};
+
   useEffect(() => {
     const manejarRedirect = async () => {
       try {

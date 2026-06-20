@@ -36,17 +36,15 @@ function Home() {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todos");
   const [busqueda, setBusqueda] = useState("");
   const [mostrarLogin, setMostrarLogin] = useState(false);
+  const [modoOscuro, setModoOscuro] = useState(
+    localStorage.getItem("modo") !== "claro"
+  );
 
-  // Agrega este estado en Home.jsx
-const [modoOscuro, setModoOscuro] = useState(
-  localStorage.getItem("modo") !== "claro"
-);
-
-const toggleModo = () => {
-  const nuevo = !modoOscuro;
-  setModoOscuro(nuevo);
-  localStorage.setItem("modo", nuevo ? "oscuro" : "claro");
-};
+  const toggleModo = () => {
+    const nuevo = !modoOscuro;
+    setModoOscuro(nuevo);
+    localStorage.setItem("modo", nuevo ? "oscuro" : "claro");
+  };
 
   useEffect(() => {
     const manejarRedirect = async () => {
@@ -154,7 +152,7 @@ const toggleModo = () => {
     return coincideCategoria && coincideBusqueda;
   });
 
-  const manejarConfirmacionPedido = async (numeroOperacion, direccion, telefono) => {
+  const manejarConfirmacionPedido = async (numeroOperacion, telefono) => {
     if (!logueado) {
       setMostrarLogin(true);
       return;
@@ -176,6 +174,7 @@ const toggleModo = () => {
           usuario_email: usuario.email,
           nombre: usuario.displayName,
           telefono: telefono,
+          direccion: "—",
           productos: carrito,
           total: total,
           metodo_pago: "YAPE",
@@ -195,17 +194,21 @@ const toggleModo = () => {
   };
 
   return (
-    <div className="bg-[#050510] cyber-grid scanlines min-h-screen">
+    <div className={`min-h-screen transition-colors duration-300 ${
+      modoOscuro ? "bg-[#050510] cyber-grid scanlines" : "bg-white"
+    }`}>
 
       {/* Navbar */}
       <Navbar
         usuario={usuario}
         carritoLength={carrito.reduce((acc, item) => acc + item.cantidad, 0)}
         onLogout={() => auth.signOut()}
+        modoOscuro={modoOscuro}
+        toggleModo={toggleModo}
       />
 
       {/* 1. Hero */}
-      <Hero />
+      <Hero modoOscuro={modoOscuro} />
 
       {/* 2. Buscador */}
       <section className="px-6 md:px-10 pt-10">
@@ -214,7 +217,11 @@ const toggleModo = () => {
           placeholder="Buscar producto..."
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
-          className="w-full bg-zinc-900 text-white px-5 py-3 rounded-xl outline-none border border-zinc-700 focus:border-neon-purple transition-all"
+          className={`w-full px-5 py-3 rounded-xl outline-none border transition-all ${
+            modoOscuro
+              ? "bg-zinc-900 text-white border-zinc-700 focus:border-purple-500"
+              : "bg-zinc-100 text-black border-zinc-300 focus:border-purple-500"
+          }`}
         />
       </section>
 
@@ -227,8 +234,10 @@ const toggleModo = () => {
               onClick={() => setCategoriaSeleccionada(categoria)}
               className={`px-6 py-3 rounded-2xl transition-all ${
                 categoriaSeleccionada === categoria
-                  ? "bg-neon-purple shadow-neon-purple text-white"
-                  : "bg-zinc-900 text-gray-400"
+                  ? "bg-purple-600 text-white shadow-[0_0_15px_rgba(168,85,247,0.4)]"
+                  : modoOscuro
+                    ? "bg-zinc-900 text-gray-400 hover:text-white"
+                    : "bg-zinc-100 text-gray-600 hover:text-black"
               }`}
             >
               {categoria}
@@ -239,8 +248,12 @@ const toggleModo = () => {
 
       {/* 4. Encabezado del catálogo */}
       <section className="flex justify-between items-center px-6 md:px-10 pb-10">
-        <h2 className="text-4xl font-bold text-white">Productos</h2>
-        <div className="bg-zinc-900 text-white px-5 py-2 rounded-xl">
+        <h2 className={`text-4xl font-bold ${modoOscuro ? "text-white" : "text-black"}`}>
+          Productos
+        </h2>
+        <div className={`px-5 py-2 rounded-xl ${
+          modoOscuro ? "bg-zinc-900 text-white" : "bg-zinc-100 text-black"
+        }`}>
           {productosFiltrados.length}
         </div>
       </section>
@@ -260,6 +273,7 @@ const toggleModo = () => {
             key={producto.id}
             producto={producto}
             agregarAlCarrito={agregarAlCarrito}
+            modoOscuro={modoOscuro}
           />
         ))}
       </section>
@@ -270,15 +284,17 @@ const toggleModo = () => {
           carrito={carrito}
           eliminarDelCarrito={eliminarDelCarrito}
           vaciarCarrito={vaciarCarrito}
+          modoOscuro={modoOscuro}
         />
         <PaymentMethod
           carrito={carrito}
           total={total}
           onConfirmarPedido={manejarConfirmacionPedido}
+          modoOscuro={modoOscuro}
         />
       </section>
 
-      <Footer />
+      <Footer modoOscuro={modoOscuro} />
       <WhatsAppButton />
       <BotAyuda />
 

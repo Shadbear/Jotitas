@@ -2,7 +2,6 @@ import { useState } from "react";
 
 function PaymentMethod({ carrito, onConfirmarPedido }) {
   const [numeroOperacion, setNumeroOperacion] = useState("");
-  const [direccion, setDireccion] = useState("");
   const [telefono, setTelefono] = useState("");
   const [enviando, setEnviando] = useState(false);
 
@@ -12,10 +11,6 @@ function PaymentMethod({ carrito, onConfirmarPedido }) {
   );
 
   const handleConfirmar = async () => {
-    if (!direccion.trim()) {
-      alert("Por favor, ingresa tu dirección de entrega.");
-      return;
-    }
     if (telefono.length < 9) {
       alert("Por favor, ingresa un número de teléfono válido.");
       return;
@@ -25,7 +20,7 @@ function PaymentMethod({ carrito, onConfirmarPedido }) {
       return;
     }
     setEnviando(true);
-    await onConfirmarPedido(numeroOperacion, direccion, telefono);
+    await onConfirmarPedido(numeroOperacion, telefono);
     setEnviando(false);
   };
 
@@ -58,22 +53,8 @@ function PaymentMethod({ carrito, onConfirmarPedido }) {
         </h3>
       </div>
 
-      {/* Datos de entrega y pago */}
+      {/* Datos de pago */}
       <div className="space-y-4">
-
-        {/* Dirección */}
-        <div>
-          <label className="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">
-            Dirección de entrega
-          </label>
-          <input
-            type="text"
-            placeholder="Ej: Jr. Lima 123, Pisco, Ica"
-            value={direccion}
-            onChange={(e) => setDireccion(e.target.value)}
-            className="w-full bg-black border border-purple-500/30 rounded-xl p-4 text-white placeholder-zinc-600 focus:border-purple-500 outline-none transition-all"
-          />
-        </div>
 
         {/* Teléfono */}
         <div>
@@ -105,10 +86,10 @@ function PaymentMethod({ carrito, onConfirmarPedido }) {
 
         {/* Botón enviar */}
         <button
-          disabled={!direccion.trim() || telefono.length < 9 || numeroOperacion.length < 4 || enviando}
+          disabled={telefono.length < 9 || numeroOperacion.length < 4 || enviando}
           onClick={handleConfirmar}
           className={`w-full py-4 rounded-xl font-black text-white transition-all ${
-            !direccion.trim() || telefono.length < 9 || numeroOperacion.length < 4 || enviando
+            telefono.length < 9 || numeroOperacion.length < 4 || enviando
               ? "bg-zinc-800 cursor-not-allowed opacity-50"
               : "bg-purple-600 hover:bg-purple-700"
           }`}
